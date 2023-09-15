@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Hotel App</title>
+</head>
+<body>
+    <h1>Welcome to our Hotel</h1>
+    <ul>
+        {% for apartment in apartments %}
+            <li>{{ apartment.name }}: ${{ apartment.price_per_night }} per night</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
