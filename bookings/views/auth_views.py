@@ -1,7 +1,6 @@
-
 from venv import logger
 from django.shortcuts import render, redirect
-from .models import Apartment, User
+from ..models import Apartment, User
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import login, logout, authenticate
 import logging

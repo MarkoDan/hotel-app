@@ -9,10 +9,19 @@ class Apartment(models.Model):
     description = models.TextField()
     price_per_night = models.DecimalField(max_digits=7, decimal_places=2)
     image = models.ImageField(upload_to='apartments/')
+    number_of_rooms = models.PositiveIntegerField(null=True, blank=True)
+    number_of_beds = models.PositiveIntegerField(null=True, blank=True)
+    maximix_number_of_guests = models.PositiveIntegerField(null=True, blank=True)
 
 class Booking(models.Model):
     apartment = models.ForeignKey(Apartment, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
+    number_of_guests = models.PositiveIntegerField(null=True, blank=True)
     check_in_date = models.DateField()
     check_out_date = models.DateField()
     total_price = models.DecimalField(max_digits=9, decimal_places=2, null=True, blank=True)
+    
+
+class ApartmentImage(models.Model):
+    apartment = models.ForeignKey(Apartment, on_delete=models.CASCADE, related_name='images')
+    image = models.ImageField(upload_to='apartments/')
