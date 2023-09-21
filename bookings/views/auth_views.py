@@ -12,6 +12,10 @@ def home(request):
 
 
 def login_request(request):
+    #If user is already authenticated, redirect them to the home page
+    if request.user.is_authenticated:
+        return redirect('bookings:home')
+
     #Handles post request
     if request.method == "POST":
         #Get username and password from request.POST dictionary
