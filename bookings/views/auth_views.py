@@ -1,9 +1,12 @@
 from venv import logger
 from django.shortcuts import render, redirect
 from ..models import Apartment, User
-from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth import login, logout, authenticate
 import logging
+from django.contrib.messages import error, success
+from django.contrib.auth.decorators import login_required
+from bookings.forms import ProfileForm
 
 
 def home(request):
@@ -13,55 +16,57 @@ def home(request):
 
 def login_request(request):
     #If user is already authenticated, redirect them to the home page
-    if request.user.is_authenticated:
+    if request.user_isauthenticated:
         return redirect('bookings:home')
+    
+    #Instantiate the form
+    form = AuthenticationForm(request, data=request.POST or None)
 
-    #Handles post request
-    if request.method == "POST":
-        #Get username and password from request.POST dictionary
-        username = request.POST['username']
-        password = request.POST['psw']
-
-        #Try to check if provided credentials can be authenticated
-        user = authenticate(username=username, password=password)
-        if user is not None:
-            #If user is valid, call login method and login current user
+    if request.method == 'POST':
+        if form.is_valid():
+            #Form data is valid
+            user = form.get_user()
             login(request, user)
             return redirect('bookings:home')
         else:
-            return render(request, 'bookings/login.html')
-    else:
-        return render(request, 'bookings/login.html')
-
+            #Display form with errors
+            error(request, "Invalid username or password.")
 
 
 
 def register(request):
-    if request.method == "GET":
-        return render(request, 'bookings/register.html')
-    elif request.method == "POST":
-        #Get user information from request.POST
-        first_name = request.POST['firstname']
-        last_name = request.POST['lastname']
-        username = request.POST['username']
-        password = request.POST['psw']
-
-        user_exists = False
-        try:
-            #Check if user already exists
-            User.objects.get(username=username)
-            user_exists = True
-        except:
-            #If not, simply log this is a new user
-            logger.debug("{} is new user", format(username))
-
-        if not user_exists:
-            #Create user in auth_user table
-            user = User.objects.create_user(username=username, first_name=first_name, last_name=last_name, password=password)
-
+    if request.method == 'POST':
+        form = UserCreationForm(request.POST or None)
+        context = {'form': form}
+        if form.is_valid():
+            user = form.save()
+            #Log the user in
             login(request, user)
+            success(request, "Registration succesful!")
             return redirect('bookings:home')
-        
         else:
-            return render(request, 'bookings/register.html')
+            #If the form is not valid, return the form along with the validation error
+            error(request, "Registratio failed. Please check the form for errors.")
+            return render(request, 'bookings/register.html', context)
+    else:
+        form = UserCreationForm()
+        return render(request, 'bookings/register.html', {'form': form})
 
+
+def logout_request(request):
+    logout(request)
+    return redirect('bookings:home')
+
+
+@login_required
+def profile_view(request):
+    if request.method == 'POST':
+        form = ProfileForm(request.POST, instance=request.user)
+        if form.is_valid():
+            form.save()
+            success(request, 'Your profile has been updated!')
+            return redirect('bookings:profile')
+    else:
+        form = ProfileForm(instance=request.user)
+    
+    return render(request, 'bookings/profile.html', {'form': form})
