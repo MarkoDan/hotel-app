@@ -40,6 +40,9 @@ def register(request):
         context = {'form': form}
         if form.is_valid():
             user = form.save()
+
+            #Set the backend attribute
+            user.backend = 'django.contrib.auth.backends.ModelBackend'
             #Log the user in
             login(request, user)
             success(request, "Registration succesful!")

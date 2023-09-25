@@ -13,7 +13,7 @@ __pycache__/
 myenv/
 *.venv
 venv/
-
+virtual-env/
 
 # Any other environment files
 *.env
