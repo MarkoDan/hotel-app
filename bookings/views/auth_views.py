@@ -7,6 +7,7 @@ import logging
 from django.contrib.messages import error, success
 from django.contrib.auth.decorators import login_required
 from bookings.forms import ProfileForm
+from django.contrib import messages
 
 
 def home(request):
@@ -73,3 +74,16 @@ def profile_view(request):
         form = ProfileForm(instance=request.user)
     
     return render(request, 'bookings/profile.html', {'form': form})
+
+def delete_account(request):
+    if request.method == "POST":
+        user = request.user
+        user.delete() #This deletes the user from database
+        messages.success(request, "Your account has been succesfully deleted.")
+        logout(request) #Log the user out
+        return redirect('bookings:home')
+    return render(request, 'bookings/confirm_delete.html')
+
+
+def contact(request):
+    return render(request, 'bookings/contact.html')

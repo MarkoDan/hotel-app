@@ -30,7 +30,15 @@
                     <label class="form-label">Email</label>
                     <input type="email" class="form-control" name="{{ form.email.name }}" value="{{ user.email }}">
                 </div>
+
+                <a class="d-block mt-2">
+                    <a href="{% url 'bookings:password_change' %}">Reset Password</a>
+                </a>
+
                 <button type="submit" class="btn btn-primary">Update Profile</button>
+
+                <a href="{% url 'bookings:delete_account' %}" class="btn btn-danger">Delete Account</a>
+
             </form>
         </div>
     </div>
