@@ -17,7 +17,8 @@
 </head>
 
 <body>
-  {% block navbar %}
+  <div id="content-wrap">
+    {% block navbar %}
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <a class="navbar-brand" href="{% url 'bookings:home' %}">Hotel Name</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -69,15 +70,28 @@
         {% endif %}
 
 
-    <main>
+    <main class="flex-grow-1">
         {% block content %}
         <!-- This block will be replaced by the content of child templates -->
         {% endblock %}
     </main>
+  </div>
+  
+    
+  <footer>
+    <div class="container">
+        <div class="row justify-content-between align-items-center">
+            <div class="col-12 col-md-auto text-center text-md-left mb-2 mb-md-0">
+                © 2023 Your Hotel Name. All Rights Reserved.
+            </div>
+            <div class="col-12 col-md-auto text-center text-md-right">
+                <a href="{% url 'bookings:privacy_policy' %}" class="d-inline-block ml-2 ml-md-3">Privacy Policy</a>
+                <a href="{% url 'bookings:terms_and_conditions' %}" class="d-inline-block ml-2 ml-md-3">Terms & Conditions</a>
+            </div>
+        </div>
+    </div>
+  </footer>
 
-    <footer class="text-center py">
-        <p>&copy; 2023 Hotel App. All rights reserved.</p>
-    </footer>
 
     <!-- Add any common scripts here, for example, jQuery or Bootstrap scripts -->
     <!-- jQuery library -->

@@ -1,6 +1,8 @@
 from django.shortcuts import get_object_or_404, render, redirect
-from ..models import Apartment
+from ..models import Apartment, Booking
 from django.core.paginator import Paginator
+from datetime import datetime
+from django.db.models import Q
 
 def apartments_view(request):
     if request.method == "GET":
@@ -32,3 +34,15 @@ def fetch_appartments(request, items_per_page=10):
     context['apartments'] = apartments
     return context
 
+
+def is_apartment_available(apartment, check_in, check_out):
+    overlapipping_bookings = Booking.objects.filter(apartment=apartment).filter(
+    (Q(check_in_date__lt=check_in) & Q(check_out_date__gt=check_in)) |
+    (Q(check_in__lt=check_out) & Q(check_out__date__gt=check_out))
+    )
+    return overlapipping_bookings.count() == 0
+
+
+def calculate_total_price(apartment, check_in, check_out):
+    number_of_nights = (check_out - check_in).days
+    return apartment.price_per_night * number_of_nights

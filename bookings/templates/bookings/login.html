@@ -1,36 +1,39 @@
+
 {% extends "bookings/base.html" %}
 
 {% block content %}
-<div class="container mt-5">
-    <div class="row justify-content-center">
-        <div class="col-md-6"> <!-- Makes the form take up half the space on medium screens and above -->
-            <form action="{% url 'bookings:login' %}" method="post" class="p-4 rounded bg-light">
-                {% csrf_token %}
-                <h1 class="mb-4 text-center">Login</h1>
-
-                <!-- Using Django built-in form for authentication -->
-                <div class="mb-3">
-                    <label for="{{ form.username.id_for_label }}" class="form-label">User Name:</label>
-                    <input type="text" name="{{ form.username.name }}" class="form-control" placeholder="Enter User Name" id="{{ form.username.id_for_label }}" required>
-                </div>
-                <div class="mb-3">
-                    <label for="{{ form.password.id_for_label }}" class="form-label">Password:</label>
-                    <input type="password" name="{{ form.password.name }}" class="form-control" placeholder="Enter Password" id="{{ form.password.id_for_label }}" required>
-                    <small class="d-block mt-2">
-                        <a href="{% url 'bookings:password_reset' %}">Forgot Password?</a>
-                    </small>
-                </div>
-
-                <!-- Display form errors if any -->
-                {% if form.errors %}
-                    <div class="alert alert-danger">
-                        Invalid username or password.
+<div id="content-wrap">
+    <div class="container flex-container my-4 mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-6"> <!-- Makes the form take up half the space on medium screens and above -->
+                <form action="{% url 'bookings:login' %}" method="post" class="p-4 rounded bg-light">
+                    {% csrf_token %}
+                    <h1 class="mb-4 text-center">Login</h1>
+    
+                    <!-- Using Django built-in form for authentication -->
+                    <div class="mb-3">
+                        <label for="{{ form.username.id_for_label }}" class="form-label">User Name:</label>
+                        <input type="text" name="{{ form.username.name }}" class="form-control" placeholder="Enter User Name" id="{{ form.username.id_for_label }}" required>
                     </div>
-                {% endif %}
-
-                <button class="btn btn-primary w-100" type="submit">Login</button> <!-- w-100 makes the button full width -->
-            </form>
+                    <div class="mb-3">
+                        <label for="{{ form.password.id_for_label }}" class="form-label">Password:</label>
+                        <input type="password" name="{{ form.password.name }}" class="form-control" placeholder="Enter Password" id="{{ form.password.id_for_label }}" required>
+                        <small class="d-block mt-2">
+                            <a href="{% url 'bookings:password_reset' %}">Forgot Password?</a>
+                        </small>
+                    </div>
+    
+                    <!-- Display form errors if any -->
+                    {% if form.errors %}
+                        <div class="alert alert-danger">
+                            Invalid username or password.
+                        </div>
+                    {% endif %}
+    
+                    <button class="btn btn-primary w-100" type="submit">Login</button> <!-- w-100 makes the button full width -->
+                </form>
+            </div>
         </div>
     </div>
-</div>
+</div>  {# end of content-wrap #}
 {% endblock %}

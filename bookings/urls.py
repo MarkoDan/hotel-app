@@ -16,6 +16,8 @@ urlpatterns = [
     path('apartments/', apartment_views.apartments_view, name='apartments'),
     path('apartments/<int:apartment_id>/', apartment_views.apartment_detail, name='apartment_detail'),
     path('contact/', auth_views.contact, name='contact'),
+    path('privacy-policy/', auth_views.privacy_policy, name='privacy_policy'),
+    path('terms-and-conditions/', auth_views.terms_and_conditions, name='terms_and_conditions'),
 
 
     #Profile urls
