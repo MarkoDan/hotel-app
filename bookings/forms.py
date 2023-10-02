@@ -10,6 +10,10 @@ class ProfileForm(forms.ModelForm):
         fields = ['username', 'email', 'first_name', 'last_name']
 
 class BookingForm(forms.ModelForm):
+    number_of_guests = forms.IntegerField(required=True)
+    check_in_date = forms.DateField(widget=forms.TextInput(attrs={'class': 'date-picker'}))
+    check_out_date = forms.DateField(widget=forms.TextInput(attrs={'class': 'date-picker'}))
     class Meta:
         model = Booking
-        fields = ['number_of_guest', 'check_in_date', 'check_out_date']
+        fields = ['number_of_guests', 'check_in_date', 'check_out_date']
+

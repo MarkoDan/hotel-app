@@ -21,6 +21,11 @@ class Booking(models.Model):
     check_out_date = models.DateField()
     total_price = models.DecimalField(max_digits=9, decimal_places=2, null=True, blank=True)
     
+    @property
+    def user_full_name(self):
+        return f"{self.user.first_name} {self.user.last_name}"
+
+
 
 class ApartmentImage(models.Model):
     apartment = models.ForeignKey(Apartment, on_delete=models.CASCADE, related_name='images')

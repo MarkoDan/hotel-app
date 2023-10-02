@@ -1,0 +1,124 @@
+{% extends "bookings/base.html" %}
+
+{% block content %}
+
+<style>
+  .carousel-container {
+      position: relative;
+      width: 100%;
+      padding-top: 90%;  /* 4:3 aspect ratio */
+      overflow: hidden;
+  }
+
+  .carousel-img {
+      border-radius: 15px;
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 100%;
+      width: 100%;
+      object-fit: contain;
+  }
+</style>
+
+<div class="container mt-5">
+    <div class="row">
+
+        <!-- Left side: Carousel -->
+        <div class="col-lg-8">
+            <div id="apartmentImagesCarousel" class="carousel slide" data-ride="carousel">
+                <!-- Indicators or Dots -->
+                <ol class="carousel-indicators">
+                    {% for image in apartment.images.all %}
+                        <li data-target="#apartmentImagesCarousel" data-slide-to="{{ forloop.counter0 }}" {% if forloop.first %}class="active"{% endif %}></li>
+                    {% endfor %}
+                </ol>
+
+                <!-- Slides -->
+                <div class="carousel-inner">
+                    {% for image in apartment.images.all %}
+                        <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                            <div class="carousel-container">
+                                <img src="{{ image.image.url }}" class="carousel-img" alt="{{ apartment.first_name }} image">
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        <!-- End of Left side: Carousel -->
+
+        <!-- Right side: Apartment Details -->
+        <div class="col-lg-4">
+            <h1>{{ apartment.name }}</h1>
+            <p class="text-muted"><strong>Price Per Night:</strong> ${{ apartment.price_per_night }}</p>
+            <p><strong>Description:</strong></p>
+            <p class="lead">{{ apartment.description }}</p>
+
+            <!-- Button, Modal and other details -->
+
+
+                <!-- Booking Modal -->
+                <!-- ... modal content here ... -->
+
+
+                {% if user.is_authenticated %}
+                    <!-- Button to trigger the modal -->
+                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#bookingModal">Book Now</button>
+
+                    <!-- Booking Modal -->
+                    <div class="modal fade" id="bookingModal" tabindex="-1" role="dialog" aria-labelledby="bookingModalLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="bookingModalLabel">Booking Form</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    <!-- Your booking form goes here -->
+                                    <form method="post" action="{% url 'bookings:single_apartment' %}">
+                                        {% csrf_token %}
+                                        {% for field in form %}
+                                            <div class="form-group">
+                                                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                                                {{ field }}
+                                                {% if field.errors %}
+                                                    <div class="alert alert-danger mt-2">
+                                                        {{ field.errors|first }}
+                                                    </div>
+                                                {% endif %}
+                                            </div>
+                                        {% endfor %}
+                                        <div id='calendar'></div>
+                                        {% if form.non_field_errors %}
+                                            <div class="alert alert-danger">
+                                                {% for error in form.non_field_errors %}
+                                                    {{ error }}
+                                                {% endfor %}
+                                            </div>
+                                        {% endif %}
+                                        <button type="submit" class="btn btn-primary">Book</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% else %}
+                    <p class="alert alert-warning">Please <a href="{% url 'bookings:login' %}">login</a> first before booking.</p>
+                {% endif %}
+
+
+        </div>
+        <!-- End of Right side: Apartment Details -->
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // ... your calendar script ...
+        });
+    </script>
+</div>
+
+{% endblock %}

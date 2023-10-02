@@ -155,9 +155,10 @@ AUTHENTICATION_BACKENDS = [
 
 LOGIN_REDIRECT_URL = 'bookings:home'
 
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_BACKEND = 'django_mailjet.backends.MailjetBackend'
+EMAIL_HOST = 'in-v3.mailjet.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'dankovicmarko18@gmail.com'
-EMAIL_HOST_PASSWORD = 'dosxtegasknvrkjm'
+MAILJET_API_KEY = '216cdac44c686d08267ee3d4e8165976'
+MAILJET_API_SECRET = '166cc52c61d762a4e3747a3e3467a05a'
+DEFAULT_FROM_EMAIL = 'dankovic.marko@yahoo.com'
