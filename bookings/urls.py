@@ -21,6 +21,7 @@ urlpatterns = [
     
     path('apartment/', apartment_views.single_apartment, name='single_apartment'),
     path('booking-success/', apartment_views.booking_success, name='booking_success'),
+    path('get_bookings/', apartment_views.get_bookings, name='get_bookings'),
 
 
     #Profile urls

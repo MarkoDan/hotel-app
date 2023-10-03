@@ -1,24 +1,150 @@
+
 {% extends "bookings/base.html" %}
 
 {% block content %}
+{% load widget_tweaks %}
 
 <style>
-  .carousel-container {
-      position: relative;
-      width: 100%;
-      padding-top: 90%;  /* 4:3 aspect ratio */
-      overflow: hidden;
+    body {
+        font-family: 'Poppins', sans-serif;
+        color: #333333;
+    }
+
+    h1, h2, h3, h4, h5, h6 {
+        font-weight: 700;
+    }
+
+    /* Background */
+    .container{
+      background-color: #f2f2f2;
+      padding: 50px 15px;
+      border-radius: 0px;
+      box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.0);
+
+
+    }
+
+    footer .container {
+   background-color: transparent;  /* Or any other styles you want to reset */
+   /* other properties to reset or override */
+   box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.0);
   }
 
-  .carousel-img {
-      border-radius: 15px;
-      position: absolute;
-      top: 0;
-      left: 0;
-      height: 100%;
-      width: 100%;
-      object-fit: contain;
+
+    /* Carousel Styles */
+    .carousel-container {
+        position: relative;
+        width: 100%;
+        padding-top: 60%;  /* 3:2 aspect ratio */
+        overflow: hidden;
+        height: 400px;
+    }
+
+    .carousel-img {
+        border-radius: 15px;
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 100%;
+        width: 100%;
+        object-fit: cover;
+    }
+
+    
+
+    /* Modal Styles */
+    .modal-content {
+        border-radius: 15px;
+        box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .modal-header {
+        border-bottom: none;
+        background-color: #007BFF;
+        color: white;
+    }
+    .modal {
+    z-index: 1050 !important;
+    }
+
+
+    .modal-body {
+        padding: 30px;
+    }
+
+    .form-control {
+        border-radius: 10px;
+    }
+
+    .btn-primary {
+        border-radius: 10px;
+        background-color: #007BFF;
+        border: none;
+        transition: all 0.3s;
+    }
+
+    .btn-primary:hover {
+        background-color: #0056b3;
+    }
+
+    .btn-secondary {
+        border-radius: 10px;
+        transition: all 0.3s;
+    }
+
+    .btn-secondary:hover {
+        background-color: #e6e6e6;
+    }
+
+    /* Additional Styles */
+    .info-item {
+        display: flex;
+        align-items: center;
+        margin-bottom: 15px;
+    }
+    
+    .info-item i {
+        font-size: 24px;
+        margin-right: 10px;
+        color: #007BFF;
+    }
+
+    .apartment-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 25px;
+    }
+
+    .apartment-title {
+        margin: 0;
+        font-size: 2.5rem;
+    }
+
+    .apartment-price {
+        color: #007BFF;
+        font-size: 24px;
+        font-weight: bold;
+    }
+
+    /* Datepicker */
+    .datepicker-container {
+    display: none;
+    position: absolute;
+    background-color: white;
+    border: 1px solid #ccc;
   }
+  .datepicker-day {
+      display: inline-block;
+      width: 30px;
+      height: 30px;
+      text-align: center;
+      vertical-align: top;
+  }
+  .datepicker-day.unavailable {
+      background-color: red;
+  }
+
 </style>
 
 <div class="container mt-5">
@@ -39,86 +165,171 @@
                     {% for image in apartment.images.all %}
                         <div class="carousel-item {% if forloop.first %}active{% endif %}">
                             <div class="carousel-container">
-                                <img src="{{ image.image.url }}" class="carousel-img" alt="{{ apartment.first_name }} image">
+                                <img src="{{ image.image.url }}" class="carousel-img" alt="Apartment Image">
                             </div>
                         </div>
                     {% endfor %}
                 </div>
             </div>
         </div>
+        
+      </div>
+      
+        <!-- Booking Section -->
+        <div class="container mt-5 apartment-container">
+          <div class="row">
+              <div class="col-md-12">
+                <div id="calendar"></div>
+                  <h3>Book this apartment:</h3>
+                  <form method="post" action="{% url 'bookings:single_apartment' %}">
+                      {% csrf_token %}
+
+                      <input type="text" id="datepicker" readonly>
+
+                      {% for field in form %}
+                          <div class="form-group row">
+                              <!-- Adjust column size based on the field (for better styling) -->
+                                  <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                                  {{ field }}
+                                  {% if field.errors %}
+                                      <div class="alert alert-danger mt-2">
+                                          {{ field.errors|first }}
+                                      </div>
+                                  {% endif %}
+                              </div>
+                          </div>
+                      {% endfor %}
+                      
+      
+                      {% if form.non_field_errors %}
+                          <div class="alert alert-danger">
+                              {% for error in form.non_field_errors %}
+                                  {{ error }}
+                              {% endfor %}
+                          </div>
+                      {% endif %}
+                      
+                      <!-- Book Now Button -->
+                      <div class="form-group">
+                          <button type="submit" class="btn btn-primary">Book</button>
+                      </div>
+                  </form>
+              </div>
+          </div>
+
+
         <!-- End of Left side: Carousel -->
-
-        <!-- Right side: Apartment Details -->
-        <div class="col-lg-4">
-            <h1>{{ apartment.name }}</h1>
-            <p class="text-muted"><strong>Price Per Night:</strong> ${{ apartment.price_per_night }}</p>
-            <p><strong>Description:</strong></p>
-            <p class="lead">{{ apartment.description }}</p>
-
-            <!-- Button, Modal and other details -->
-
-
-                <!-- Booking Modal -->
-                <!-- ... modal content here ... -->
-
-
-                {% if user.is_authenticated %}
-                    <!-- Button to trigger the modal -->
-                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#bookingModal">Book Now</button>
-
-                    <!-- Booking Modal -->
-                    <div class="modal fade" id="bookingModal" tabindex="-1" role="dialog" aria-labelledby="bookingModalLabel" aria-hidden="true">
-                        <div class="modal-dialog">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h5 class="modal-title" id="bookingModalLabel">Booking Form</h5>
-                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                        <span aria-hidden="true">&times;</span>
-                                    </button>
-                                </div>
-                                <div class="modal-body">
-                                    <!-- Your booking form goes here -->
-                                    <form method="post" action="{% url 'bookings:single_apartment' %}">
-                                        {% csrf_token %}
-                                        {% for field in form %}
-                                            <div class="form-group">
-                                                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
-                                                {{ field }}
-                                                {% if field.errors %}
-                                                    <div class="alert alert-danger mt-2">
-                                                        {{ field.errors|first }}
-                                                    </div>
-                                                {% endif %}
-                                            </div>
-                                        {% endfor %}
-                                        <div id='calendar'></div>
-                                        {% if form.non_field_errors %}
-                                            <div class="alert alert-danger">
-                                                {% for error in form.non_field_errors %}
-                                                    {{ error }}
-                                                {% endfor %}
-                                            </div>
-                                        {% endif %}
-                                        <button type="submit" class="btn btn-primary">Book</button>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                {% else %}
-                    <p class="alert alert-warning">Please <a href="{% url 'bookings:login' %}">login</a> first before booking.</p>
-                {% endif %}
-
-
+        <div class="container mt-5">
+          <h4><strong>Description</strong></h4>
+          <p>{{apartment.description}}</p>
         </div>
-        <!-- End of Right side: Apartment Details -->
-    </div>
+        <div class="container">
+          <h4><strong>The space</strong></h4>
+          <div class="row">
+              <div class="col-sm-6">
+                  <p><i class="fa fa-fw fa-male"></i> Max people: {{ apartment.max_people }}</p>
+                  <p><i class="fa fa-fw fa-bath"></i>Number of Rooms: {{apartment.number_of_rooms}}</i></p>
+                  <p><i class="fa fa-fw fa-bath"></i> Bathrooms: {{ apartment.bathrooms }}</p>
+                  <p><i class="fa fa-fw fa-bed"></i> Bedrooms: {{ apartment.number_of_bedrooms }} ({{ apartment.size_of_bedrooms }} sqm)</p>
+              </div>
+              <div class="col-sm-6">
+                  <p><i class="fa fa-fw fa-clock-o"></i> Check In: After {{ apartment.check_in|time:"h:i A" }}</p>
+                  <p><i class="fa fa-fw fa-clock-o"></i> Check Out: Before {{ apartment.check_out|time:"h:i A" }}</p>
+              </div>
+          </div>
+          <hr>
+      </div>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // ... your calendar script ...
-        });
-    </script>
+      <div class="container">
+        <h4><strong>Amenities</strong></h4>
+        <div class="row">
+            <div class="col-sm-6">
+                {% if apartment.wifi %}
+                    <p><i class="fa fa-wifi"></i> WiFi</p>
+                {% else %}
+                    <p>WiFi Not Available</p>
+                {% endif %}
+                {% if apartment.tv %}
+                <p><i class="fa fa-tv"></i> TV</p>
+                {% else %}
+                    <p>TV Not Available</p>
+                {% endif %}
+                {% if apartment.kitchen %}
+                <p><i class="fa fa-cutlery"></i> Kitchen</p>
+                {% else %}
+                    <p>Kitchen Not Available</p>
+                {% endif %}
+                {% if apartment.shower %}
+                    <p><i class="fa fa-shower"></i> Shower</p>
+                {% else %}
+                    <p>Shower Not Available</p>
+                {% endif %}
+            </div>
+
+
+
+            
+
+
+          </div>
+          </div>
+        </div>
+        
+        <hr>
+      </div>
+    
+      
+       
+    </div>
 </div>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const dateInput = document.getElementById('datepicker');
+
+    // Sample data. Replace with API data.
+    let unavailableDates = ['2023-09-20', '2023-09-21'];
+
+    fetch('/get_bookings/')
+    .then(response => response.json())
+    .then(data => {
+        unavailableDates = data;
+    });
+
+
+    dateInput.addEventListener('click', function() {
+        if (document.querySelector('.datepicker-container')) {
+            document.querySelector('.datepicker-container').remove();
+            return;
+        }
+
+        let container = document.createElement('div');
+        container.classList.add('datepicker-container');
+        dateInput.parentNode.appendChild(container);
+        
+        for (let i = 1; i <= 30; i++) {  // Assuming 30 days for simplicity.
+            let date = new Date(2023, 8, i);  // September 2023
+            let day = document.createElement('div');
+            day.classList.add('datepicker-day');
+            day.innerText = date.getDate();
+
+            if (unavailableDates.includes(date.toISOString().split('T')[0])) {
+                day.classList.add('unavailable');
+                day.addEventListener('click', function() {
+                    alert('Date is unavailable');
+                });
+            } else {
+                day.addEventListener('click', function() {
+                    dateInput.value = date.toISOString().split('T')[0];
+                    document.querySelector('.datepicker-container').remove();
+                });
+            }
+
+            container.appendChild(day);
+        }
+    });
+});
+
+
+</script>
 
 {% endblock %}

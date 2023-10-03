@@ -3,10 +3,11 @@ from django.shortcuts import get_object_or_404, render, redirect
 from bookings.forms import BookingForm
 from ..models import Apartment, Booking
 from django.core.paginator import Paginator
-from datetime import date, timedelta
+from datetime import date, timedelta, datetime
 from django.db.models import Q
 from django.contrib import messages
 from django.db import transaction
+from django.http import JsonResponse
 
 
 
@@ -111,3 +112,25 @@ def apartment_availability(request):
         'booked_dates': booked_dates,
         'available_dates': available_dates,
     })
+
+
+def get_amenities_with_icons(self):
+    amenities_icons = {
+        'wifi': 'fa fa-wifi',
+        'tv': 'fa-tv',
+        'kitchen': 'fa-cutlery',
+        'shower': 'fa-shower',
+        'heating': 'fa-thermometer'
+    }
+    return [(amenity, icon) for amenity, icon in amenities_icons.items() if getattr(self, amenity)]
+
+
+def get_bookings(request):
+    bookings = Booking.objects.all()
+    data = [{
+        'title': 'Booked', 
+        'start': booking.check_in_date.strftime('%Y-%m-%d'), 
+        'end': (booking.check_out_date + timedelta(days=1)).strftime('%Y-%m-%d'),  # add one day to the end date because FullCalendar's end date is exclusive
+        'color': 'red' # Color for unavailable dates
+    } for booking in bookings]
+    return JsonResponse(data, safe=False)
