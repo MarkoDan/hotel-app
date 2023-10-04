@@ -21,7 +21,15 @@ urlpatterns = [
     
     path('apartment/', apartment_views.single_apartment, name='single_apartment'),
     path('booking-success/', apartment_views.booking_success, name='booking_success'),
-    path('get_bookings/', apartment_views.get_bookings, name='get_bookings'),
+
+    #availability
+
+    path('check_availability/', apartment_views.check_availability, name='check_availability'),
+    path('availability_result/<str:available>/', apartment_views.availability_result, name='availability_result'),
+
+
+
+
 
 
     #Profile urls

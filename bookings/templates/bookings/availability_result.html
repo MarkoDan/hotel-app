@@ -1,0 +1,11 @@
+{% extends "bookings/base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    {% if available == 'True' %}
+        <h3>The apartment is available for your selected dates!</h3>
+    {% else %}
+        <h3>Sorry, the apartment is not available for your selected dates.</h3>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,10 +1,14 @@
 @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap");
 
 
+
 body, html {
   height: 100%;
   margin: 0;
+
 }
+body,h1,h2,h3,h4,h5,h6 {font-family: "Raleway", Arial, Helvetica, sans-serif,}
+body,h1,h2,h3,h4,h5,h6 {font-size: 50px;}
 
 body {
   display: flex;

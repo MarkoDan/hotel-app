@@ -18,32 +18,62 @@ def apartments_view(request):
         return render(request, 'bookings/available_apartments.html', context)
     
     
+# def single_apartment(request):
+#     print("Request method", request.method)
+#     apartment = get_object_or_404(Apartment)    
+#     if request.method == "POST":
+#         form = BookingForm(request.POST)
+#         if form.is_valid():
+#             print('Form is valid')
+            
+#             with transaction.atomic(): #Start a transaction
+#                 if is_apartment_available(apartment, form.cleaned_data['check_in_date'], form.cleaned_data['check_out_date']):
+#                     booking = form.save(commit=False)
+#                     booking.apartment = apartment
+#                     booking.user = request.user
+#                     booking.total_price = calculate_total_price(apartment, form.cleaned_data['check_in_date'], form.cleaned_data['check_out_date'])
+#                     booking.save()
+#                     messages.success(request, 'Booking successfull!')
+#                     return redirect('bookings:booking_success')
+#                 else:
+#                     messages.error(request, 'The apartment is not available for the chosen dates.')
+#         else:
+#             print('Form is invalid')
+#             print(form.errors)
+#     else:
+#         form = BookingForm()
+        
+#     context = {'apartment': apartment, 'form': form}
+#     return render(request, 'bookings/apartment.html', context)
+
+
 def single_apartment(request):
-    print("Request method", request.method)
-    apartment = get_object_or_404(Apartment)    
+    apartment = get_object_or_404(Apartment)
+
     if request.method == "POST":
         form = BookingForm(request.POST)
         if form.is_valid():
-            print('Form is valid')
-            
-            with transaction.atomic(): #Start a transaction
-                if is_apartment_available(apartment, form.cleaned_data['check_in_date'], form.cleaned_data['check_out_date']):
-                    booking = form.save(commit=False)
-                    booking.apartment = apartment
-                    booking.user = request.user
-                    booking.total_price = calculate_total_price(apartment, form.cleaned_data['check_in_date'], form.cleaned_data['check_out_date'])
-                    booking.save()
-                    messages.success(request, 'Booking successfull!')
-                    return redirect('bookings:booking_success')
-                else:
-                    messages.error(request, 'The apartment is not available for the chosen dates.')
-        else:
-            print('Form is invalid')
-            print(form.errors)
+            check_in_date = form.cleaned_data['check_in_date']
+            check_out_date = form.cleaned_data['check_out_date']
+
+            if is_apartment_available(apartment, check_in_date, check_out_date):
+                booking = form.save(commit=False)
+                booking.apartment = apartment
+                booking.user = request.user
+                booking.total_price = calculate_total_price(apartment, check_in_date, check_out_date)
+                booking.save()
+                messages.success(request, 'Booking succesful!')
+                return redirect('bookings:booking_success')
+            else:
+                messages.error(request, 'There was an error with your submission. Please check the details and try again.')
     else:
         form = BookingForm()
         
-    context = {'apartment': apartment, 'form': form}
+    context = {
+        'apartment': apartment,
+        'form': form
+    }
+
     return render(request, 'bookings/apartment.html', context)
 
     
@@ -80,9 +110,12 @@ def fetch_appartments(request, items_per_page=10):
 def is_apartment_available(apartment, check_in, check_out):
     overlapping_bookings = Booking.objects.filter(apartment=apartment).filter(
         (Q(check_in_date__lt=check_in) & Q(check_out_date__gt=check_in)) |
-        (Q(check_in_date__lt=check_out) & Q(check_out_date__gt=check_out))
+        (Q(check_in_date__lt=check_out) & Q(check_out_date__gt=check_out)) |
+        (Q(check_in_date=check_out)) |
+        (Q(check_out_date=check_in))
     )
     return overlapping_bookings.count() == 0
+
 
 
 def calculate_total_price(apartment, check_in, check_out):
@@ -114,23 +147,34 @@ def apartment_availability(request):
     })
 
 
-def get_amenities_with_icons(self):
-    amenities_icons = {
-        'wifi': 'fa fa-wifi',
-        'tv': 'fa-tv',
-        'kitchen': 'fa-cutlery',
-        'shower': 'fa-shower',
-        'heating': 'fa-thermometer'
-    }
-    return [(amenity, icon) for amenity, icon in amenities_icons.items() if getattr(self, amenity)]
+def availability_result(request, available):
+    context = {'available': available}
+    return render(request, 'bookings/availability_result.html', context)
+
+    
+
+def is_apartment_available_for_dates(apartment, check_in, check_out):
+    # Logic from the single_apartment function
+    return is_apartment_available(apartment, check_in, check_out)
+
+def check_availability(request):
+    check_in = request.GET.get('check_in')
+    check_out = request.GET.get('check_out')
+
+    print('Check-in:', check_in)
+    print('Check-out:',check_out)
+
+    apartment = Apartment.objects.first()
+
+    date_format = "%Y-%m-%d"  # Adjust this according to the format sent from the frontend
+    check_in_date = datetime.strptime(check_in, date_format).date() if check_in else None
+    check_out_date = datetime.strptime(check_out, date_format).date() if check_out else None
+    print(check_in_date)
+    print(check_out_date)
+
+    if is_apartment_available_for_dates(apartment, check_in_date, check_out_date):
+        return redirect('bookings:availability_result', available="True")
+    else:
+        return redirect('bookings:availability_result', available="False")
 
 
-def get_bookings(request):
-    bookings = Booking.objects.all()
-    data = [{
-        'title': 'Booked', 
-        'start': booking.check_in_date.strftime('%Y-%m-%d'), 
-        'end': (booking.check_out_date + timedelta(days=1)).strftime('%Y-%m-%d'),  # add one day to the end date because FullCalendar's end date is exclusive
-        'color': 'red' # Color for unavailable dates
-    } for booking in bookings]
-    return JsonResponse(data, safe=False)

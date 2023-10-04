@@ -5,6 +5,9 @@
 {% load widget_tweaks %}
 
 <style>
+
+    body,h1,h2,h3,h4,h5,h6 {font-family: "Raleway", Arial, Helvetica, sans-serif,}
+    body,h1,h2,h3,h4,h5,h6 {font-size: large;}
     body {
         font-family: 'Poppins', sans-serif;
         color: #333333;
@@ -51,82 +54,6 @@
     }
 
     
-
-    /* Modal Styles */
-    .modal-content {
-        border-radius: 15px;
-        box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);
-    }
-
-    .modal-header {
-        border-bottom: none;
-        background-color: #007BFF;
-        color: white;
-    }
-    .modal {
-    z-index: 1050 !important;
-    }
-
-
-    .modal-body {
-        padding: 30px;
-    }
-
-    .form-control {
-        border-radius: 10px;
-    }
-
-    .btn-primary {
-        border-radius: 10px;
-        background-color: #007BFF;
-        border: none;
-        transition: all 0.3s;
-    }
-
-    .btn-primary:hover {
-        background-color: #0056b3;
-    }
-
-    .btn-secondary {
-        border-radius: 10px;
-        transition: all 0.3s;
-    }
-
-    .btn-secondary:hover {
-        background-color: #e6e6e6;
-    }
-
-    /* Additional Styles */
-    .info-item {
-        display: flex;
-        align-items: center;
-        margin-bottom: 15px;
-    }
-    
-    .info-item i {
-        font-size: 24px;
-        margin-right: 10px;
-        color: #007BFF;
-    }
-
-    .apartment-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 25px;
-    }
-
-    .apartment-title {
-        margin: 0;
-        font-size: 2.5rem;
-    }
-
-    .apartment-price {
-        color: #007BFF;
-        font-size: 24px;
-        font-weight: bold;
-    }
-
     /* Datepicker */
     .datepicker-container {
     display: none;
@@ -145,13 +72,20 @@
       background-color: red;
   }
 
+  
+
+
 </style>
+
+
+
+
+
 
 <div class="container mt-5">
     <div class="row">
 
-        <!-- Left side: Carousel -->
-        <div class="col-lg-8">
+        <div class="col-lg-12">
             <div id="apartmentImagesCarousel" class="carousel slide" data-ride="carousel">
                 <!-- Indicators or Dots -->
                 <ol class="carousel-indicators">
@@ -174,55 +108,53 @@
         </div>
         
       </div>
-      
-        <!-- Booking Section -->
-        <div class="container mt-5 apartment-container">
-          <div class="row">
-              <div class="col-md-12">
-                <div id="calendar"></div>
-                  <h3>Book this apartment:</h3>
-                  <form method="post" action="{% url 'bookings:single_apartment' %}">
-                      {% csrf_token %}
-
-                      <input type="text" id="datepicker" readonly>
-
-                      {% for field in form %}
-                          <div class="form-group row">
-                              <!-- Adjust column size based on the field (for better styling) -->
-                                  <label for="{{ field.id_for_label }}">{{ field.label }}</label>
-                                  {{ field }}
-                                  {% if field.errors %}
-                                      <div class="alert alert-danger mt-2">
-                                          {{ field.errors|first }}
-                                      </div>
-                                  {% endif %}
-                              </div>
-                          </div>
-                      {% endfor %}
-                      
-      
-                      {% if form.non_field_errors %}
-                          <div class="alert alert-danger">
-                              {% for error in form.non_field_errors %}
-                                  {{ error }}
-                              {% endfor %}
-                          </div>
-                      {% endif %}
-                      
-                      <!-- Book Now Button -->
-                      <div class="form-group">
-                          <button type="submit" class="btn btn-primary">Book</button>
-                      </div>
-                  </form>
-              </div>
-          </div>
 
 
-        <!-- End of Left side: Carousel -->
-        <div class="container mt-5">
-          <h4><strong>Description</strong></h4>
-          <p>{{apartment.description}}</p>
-        </div>
+
+
+        <form class="form-inline mt-5" id="availabilityForm" action="{% url 'bookings:check_availability' %}" method="get">
+            
+            <!-- Check-in Date Field -->
+            <div class="form-group mr-3">
+                <label for="checkInDate" class="mr-2">Check-In</label>
+                <input type="date" class="form-control w3-input w3-border" id="checkInDate" name="check_in" required>
+            </div>
+        
+            <!-- Check-out Date Field -->
+            <div class="form-group mr-3">
+                <label for="checkOutDate" class="mr-2">Check-Out</label>
+                <input type="date" class="form-control" id="checkOutDate" name="check_out" required>
+            </div>
+        
+            <!-- Submit Button -->
+            <button type="submit" class="btn btn-primary">Check Availability</button>
+
+        </form>
+
+        <form class="form-inline mt-5" id="availabilityForm" action="{% url 'bookings:single_apartment' %}" method="get">
+            {% csrf_token %}
+            <!-- Check-in Date Field -->
+            <div class="form-group mr-3">
+                <label for="checkInDate" class="mr-2">Check-In</label>
+                <input type="date" class="form-control w3-input w3-border" id="checkInDate" name="check_in_date" required>
+            </div>
+        
+            <!-- Check-out Date Field -->
+            <div class="form-group mr-3">
+                <label for="checkOutDate" class="mr-2">Check-Out</label>
+                <input type="date" class="form-control" id="checkOutDate" name="check_out_date" required>
+            </div>
+        
+            <!-- Submit Button -->
+            <button type="submit" class="btn btn-primary">Check Availability</button>
+
+        </form>
+        
+        
+
+
+
+
         <div class="container">
           <h4><strong>The space</strong></h4>
           <div class="row">
@@ -240,94 +172,86 @@
           <hr>
       </div>
 
-      <div class="container">
-        <h4><strong>Amenities</strong></h4>
-        <div class="row">
-            <div class="col-sm-6">
-                {% if apartment.wifi %}
-                    <p><i class="fa fa-wifi"></i> WiFi</p>
-                {% else %}
-                    <p>WiFi Not Available</p>
-                {% endif %}
-                {% if apartment.tv %}
-                <p><i class="fa fa-tv"></i> TV</p>
-                {% else %}
-                    <p>TV Not Available</p>
-                {% endif %}
-                {% if apartment.kitchen %}
-                <p><i class="fa fa-cutlery"></i> Kitchen</p>
-                {% else %}
-                    <p>Kitchen Not Available</p>
-                {% endif %}
-                {% if apartment.shower %}
-                    <p><i class="fa fa-shower"></i> Shower</p>
-                {% else %}
-                    <p>Shower Not Available</p>
-                {% endif %}
+        <div class="container">
+            <h4><strong>Amenities</strong></h4>
+            <div class="row">
+                    <div class="col-sm-6">
+                        {% if apartment.wifi %}
+                            <p><i class="fa fa-wifi"></i> WiFi</p>
+                        {% else %}
+                            <p>WiFi Not Available</p>
+                        {% endif %}
+                        {% if apartment.tv %}
+                        <p><i class="fa fa-tv"></i> TV</p>
+                        {% else %}
+                            <p>TV Not Available</p>
+                        {% endif %}
+                        {% if apartment.kitchen %}
+                        <p><i class="fa fa-cutlery"></i> Kitchen</p>
+                        {% else %}
+                            <p>Kitchen Not Available</p>
+                        {% endif %}
+                        
+                    </div>
+                    <div class="col-sm-6">
+                        {% if apartment.shower %}
+                        <p><i class="fa fa-shower"></i> Shower</p>
+                        {% else %}
+                            <p>Shower Not Available</p>
+                        {% endif %}
+                        {% if apartment.shower %}
+                            <p><i class="fa fa-fw fa-thermometer"></i> Heating</p>
+                        {% else %}
+                            <p>Heating Not Available</p>
+                        {% endif %}
+                    </div>
+
             </div>
-
-
-
-            
-
-
-          </div>
-          </div>
+        
         </div>
-        
-        <hr>
-      </div>
+        <div class="container mt-5">
+            <h4><strong>More Info</strong></h4>
+            <p>{{apartment.description}}</p>
+        </div>
+
+        <div class="container mt-5">
+            <h4><strong>Contact Us</strong></h4>
     
-      
-       
+            <p>Address: 123 Hotel Street, City, Country</p>
+            <p>Phone: +1234567890</p>
+            <p>Email: hotel@example.com</p>
+        </div>
+
+        <div class="container mt-5">
+            <h4><strong>Find us on Map</strong></h4>
+            <div style="width: 100%; height: 400px;">
+            <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3155.9481776045327!2d15.237524412069266!3d44.1045236709636!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x4761faf538fc803f%3A0x13ae80c1b07add8a!2sUl.%20Josipa%20Eugena%20Tomi%C4%87a%2022%2C%2023000%2C%20Zadar%2C%20Croatia!5e1!3m2!1sen!2sdk!4v1696413937067!5m2!1sen!2sdk" width="1000" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+            </div>
+        </div>
+
+
     </div>
-</div>
-<script>
-  document.addEventListener('DOMContentLoaded', function() {
-    const dateInput = document.getElementById('datepicker');
-
-    // Sample data. Replace with API data.
-    let unavailableDates = ['2023-09-20', '2023-09-21'];
-
-    fetch('/get_bookings/')
-    .then(response => response.json())
-    .then(data => {
-        unavailableDates = data;
-    });
 
 
-    dateInput.addEventListener('click', function() {
-        if (document.querySelector('.datepicker-container')) {
-            document.querySelector('.datepicker-container').remove();
-            return;
-        }
 
-        let container = document.createElement('div');
-        container.classList.add('datepicker-container');
-        dateInput.parentNode.appendChild(container);
+
         
-        for (let i = 1; i <= 30; i++) {  // Assuming 30 days for simplicity.
-            let date = new Date(2023, 8, i);  // September 2023
-            let day = document.createElement('div');
-            day.classList.add('datepicker-day');
-            day.innerText = date.getDate();
+</div>
 
-            if (unavailableDates.includes(date.toISOString().split('T')[0])) {
-                day.classList.add('unavailable');
-                day.addEventListener('click', function() {
-                    alert('Date is unavailable');
-                });
-            } else {
-                day.addEventListener('click', function() {
-                    dateInput.value = date.toISOString().split('T')[0];
-                    document.querySelector('.datepicker-container').remove();
-                });
-            }
 
-            container.appendChild(day);
-        }
+
+
+
+
+
+<script>
+  
+    // Activate datepickers for the input fields
+    $(document).ready(function () {
+        $('.datepicker').datepicker();
     });
-});
+
+
 
 
 </script>
