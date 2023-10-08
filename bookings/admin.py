@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Apartment, ApartmentImage, Booking
+from .models import Apartment, ApartmentImage, Booking, MonthlyPricing
 
 class BookingAdmin(admin.ModelAdmin):
     list_display = ('apartment', 'user', 'user_full_name_display')
@@ -13,8 +13,12 @@ class ApartmentImageInline(admin.TabularInline):
     model = ApartmentImage
     extra = 1  # how many rows to show
 
+class MonthlyPricingInline(admin.TabularInline):
+    model = MonthlyPricing
+    extra = 12
+
 class ApartmentAdmin(admin.ModelAdmin):
-    inlines = [ApartmentImageInline]
+    inlines = [ApartmentImageInline, MonthlyPricingInline]
 
 admin.site.register(Apartment, ApartmentAdmin)
 admin.site.register(Booking, BookingAdmin)

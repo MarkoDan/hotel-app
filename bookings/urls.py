@@ -5,7 +5,6 @@ from django.contrib.auth import views as authentication_views
 from django.urls import reverse_lazy
 
 
-
 app_name = 'bookings'
 
 urlpatterns = [
@@ -19,18 +18,14 @@ urlpatterns = [
     path('privacy-policy/', auth_views.privacy_policy, name='privacy_policy'),
     path('terms-and-conditions/', auth_views.terms_and_conditions, name='terms_and_conditions'),
     
-    path('apartment/', apartment_views.single_apartment, name='single_apartment'),
+    path('apartment/', apartment_views.book_apartment, name='book_apartment'),
     path('booking-success/', apartment_views.booking_success, name='booking_success'),
+    path('booking-failed/', apartment_views.booking_failed, name='booking_failed'),
 
     #availability
 
     path('check_availability/', apartment_views.check_availability, name='check_availability'),
     path('availability_result/<str:available>/', apartment_views.availability_result, name='availability_result'),
-
-
-
-
-
 
     #Profile urls
     path('profile/', auth_views.profile_view, name='profile'),
@@ -45,4 +40,13 @@ urlpatterns = [
     path('password-reset-confirm/<uidb64>/<token>', authentication_views.PasswordResetConfirmView.as_view(template_name='registration/password_reset_confirm.html'), name='password_reset_confirm'),
     path('password_reset_complete/', authentication_views.PasswordResetCompleteView.as_view(template_name='registration/password_reset_complete.html'), name='password_reset_complete'),
 
+    #payment urls
+    path('start-payment/', apartment_views.start_payment, name='start_payment'),
+    path('stripe/webhook/', apartment_views.StripeWebhook.as_view(), name='stripe_webhook'),
+
+    #canceling booking urls
+    path('booking/cancel/<int:booking_id>/', apartment_views.cancel_booking, name='cancel_booking'),
+
+    #Bookings
+    path('display-bookings/', apartment_views.display_bookings, name='display_bookings'),
 ]

@@ -1,0 +1,58 @@
+
+{% extends "bookings/base.html" %}
+
+{% block content %}
+
+
+
+<script>
+    var stripe = Stripe('{{ stripe_public_key }}')
+
+    var style = {
+        base: {
+            fontSize: '16px',
+            color: '#32325d',
+            '::placeholder': {
+                color: '#aab7c4'
+            }
+        },
+        invalid: {
+            color: '#fa755a',
+            iconColor: '#fa755a'
+        }
+    };
+
+
+
+    document.getElementById('pay-now-button').addEventListener('click', function(){
+
+        //Disable the button to prevent double clicks
+        this.disabled = true;
+
+        //Show a spinner or processing message
+        document.getElementById('processing-message').innerHTML = "Processing your payment";
+        stripe.createPaymentMethod('card', yourCardElement).then(function(result){
+            if (result.error){
+                //Handle error
+                document.getElementById('error-message').innerText = result.error.message;
+
+                // Re-enable the button and hide the processing message
+                document.getElementById('pay-now-button').disabled = false;
+                document.getElementById('processing-message').innerText = "";
+
+            }else{
+                //Submit payment_method_id to your server
+                var form = document.getElementById('payment-form');
+                var input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = 'payment_method_id';
+                input.value = result.paymentMethod.id;
+                form.appendChild(input);
+                form.submit();
+            }
+        });
+    });
+</script>
+
+
+{% endblock %}

@@ -1,5 +1,7 @@
 <!-- bookings/templates/bookings/booking_success.html -->
 {% extends "bookings/base.html" %}
+{% load static %}
+
 
 {% block content %}
 <div class="container">
@@ -7,4 +9,7 @@
     <p>Thank you for booking with us. We've reserved the apartment for your selected dates.</p>
     <a href="{% url 'bookings:home' %}">Return to Apartments</a>
 </div>
+
+
+
 {% endblock %}

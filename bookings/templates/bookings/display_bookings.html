@@ -1,0 +1,21 @@
+{% extends "bookings/base.html" %}
+
+{% block content %}
+
+{% for booking in bookings %}
+    <!-- ... other booking details ... -->
+    <p>
+        Apartment: {{ booking.apartment.name }} <br>
+        User: {{ booking.user_full_name }} <br>
+        Number of Guests: {{ booking.number_of_guests }} <br>
+        Check-in Date: {{ booking.check_in_date }} <br>
+        Check-out Date: {{ booking.check_out_date }} <br>
+        Total Price: ${{ booking.total_price }} <br>
+        Status: {{ booking.get_status_display }}
+    </p>
+    {% if booking.status == 'confirmed' %}
+        <a href="{% url 'bookings:cancel_booking' booking.id %}">Cancel Booking</a>
+    {% endif %}
+{% endfor %}
+
+{% endblock %}

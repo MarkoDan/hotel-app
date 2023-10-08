@@ -14,7 +14,7 @@ class Apartment(models.Model):
     size_of_bedrooms = models.DecimalField(max_digits=7, decimal_places=2, null=True, blank=True, verbose_name="Bedroom Size (in sqm)")
     size_of_balcony = models.DecimalField(max_digits=7, decimal_places=2, null=True, blank=True, verbose_name="Balcony Size (in sqm)")
 
-    maximix_number_of_guests = models.PositiveIntegerField(null=True, blank=True)
+    maximum_number_of_guests = models.PositiveIntegerField(null=True, blank=True)
 
     #Amenities
     wifi = models.BooleanField(default=True, verbose_name='WIFI')
@@ -32,6 +32,14 @@ class Booking(models.Model):
     check_in_date = models.DateField()
     check_out_date = models.DateField()
     total_price = models.DecimalField(max_digits=9, decimal_places=2, null=True, blank=True)
+    stripe_charge_id = models.CharField(max_length=50, blank=True, null=True)
+    idempotency_key = models.CharField(max_length=255, unique=True)
+
+    STATUS_CHOISES = (
+        ('confirmed', 'Confirmed'),
+        ('cancelled', 'Cancelled'),
+    )
+    status = models.CharField(max_length=10, choices=STATUS_CHOISES, default='confirmed')
     
     @property
     def user_full_name(self):
@@ -42,3 +50,25 @@ class Booking(models.Model):
 class ApartmentImage(models.Model):
     apartment = models.ForeignKey(Apartment, on_delete=models.CASCADE, related_name='images')
     image = models.ImageField(upload_to='apartments/')
+
+class MonthlyPricing(models.Model):
+    MONTH_CHOICES = (
+        (1, 'January'),
+        (2, 'February'),
+        (3, 'March'),
+        (4, 'April'),
+        (5, 'May'),
+        (6, 'June'),
+        (7, 'July'),
+        (8, 'August'),
+        (9, 'September'),
+        (10, 'October'),
+        (11, 'November'),
+        (12, 'December'),
+    )
+
+    month = models.PositiveSmallIntegerField(choices=MONTH_CHOICES)
+    price = models.DecimalField(max_digits=7, decimal_places=2)
+    apartment = models.ForeignKey(Apartment, on_delete=models.CASCADE, related_name='monthly_prices')
+
+

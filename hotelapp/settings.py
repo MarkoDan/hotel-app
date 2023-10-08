@@ -55,6 +55,8 @@ MIDDLEWARE = [
     'axes.middleware.AxesMiddleware',
 ]
 
+SESSION_ENGINE = 'django.contrib.sessions.backends.db'
+
 ROOT_URLCONF = 'hotelapp.urls'
 
 TEMPLATES = [
@@ -85,6 +87,17 @@ DATABASES = {
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
+
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql_psycopg2',
+#         'NAME': 'hotel',
+#         'USER': 'postgres',
+#         'PASSWORD': 'Xlw52tfh',
+#         'HOST': 'localhost',
+#         'PORT': '5432'
+#     }
+# }
 
 
 # Password validation
@@ -163,3 +176,23 @@ EMAIL_USE_TLS = True
 MAILJET_API_KEY = '216cdac44c686d08267ee3d4e8165976'
 MAILJET_API_SECRET = '166cc52c61d762a4e3747a3e3467a05a'
 DEFAULT_FROM_EMAIL = 'dankovic.marko@yahoo.com'
+
+
+STRIPE_SECRET_KEY = 'sk_test_51Nx6YvLMpJs8NoVOPXhAyuE5eZNF7aKcYKCGT4W9bvG1DgIrEPXarvPk9MYpRuM9VdAmGSCi3jd1c0hJklelOwDJ00cHoK5wt4'
+STRIPE_PUBLIC_KEY = 'pk_test_51Nx6YvLMpJs8NoVOJyCItfzGz7Ak1pWVaYoGuR8UFZKJQJ3zKh5h3k5za9tUJJyzvH4Kv2pysaBEZBd03pvcnSi900WYudQFtJ'
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'root': {
+        'handlers': ['console'],
+        'level': 'DEBUG',
+    },
+}
+
+

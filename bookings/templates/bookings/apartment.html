@@ -77,7 +77,15 @@
 
 </style>
 
-
+<!-- {% if messages %}
+<div class="container mt-5">
+    {% for message in messages %}
+    <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %}">
+        {{ message }}
+    </div>
+    {% endfor %}
+</div>
+{% endif %} -->
 
 
 
@@ -109,47 +117,79 @@
         
       </div>
 
+        <div class="container mt-5">
+            <h4><strong>Price By Month</strong></h4>
+            <label for="monthSelector">Select Month:</label>
+            <select id="monthSelector" class="form-control">
+                {% for pricing in apartment.monthly_prices.all %}
+                    <option value="{{ pricing.price }}">{{ pricing.get_month_display }}</option>
+                {% endfor %}
+            </select>
+            <h5 class="mt-3">Price: €<span id="priceDisplay">{{ apartment.monthly_prices.first.price }}</span> per night</h5>            
+        </div>
+    
 
-
-
-        <form class="form-inline mt-5" id="availabilityForm" action="{% url 'bookings:check_availability' %}" method="get">
+        {% if user.is_authenticated %}
+            <form method="post" action="{% url 'bookings:book_apartment' %}" class="form-inline mt-5">
+                {% csrf_token %}
+                
+                <!-- Number of Guests field (assuming you want this in your form) -->
+                <div class="form-group mr-3">
+                    <label for="{{ form.number_of_guests.id_for_label }}" class="mr-2">Number of Guests</label>
+                    <input type="number" class="form-control w3-input w3-border" id="{{ form.number_of_guests.id_for_label }}" name="{{ form.number_of_guests.name }}" required min="1" value="{{ form.number_of_guests.value|default:'' }}">
+                </div>
+                        
+                
+                <!-- Check-In Date field -->
+                <div class="form-group mr-3">
+                    <label for="{{ form.check_in_date.id_for_label }}" class="mr-2">Check-In</label>
+                    <input type="date" class="form-control w3-input w3-border" id="{{ form.check_in_date.id_for_label }}" name="{{ form.check_in_date.name }}" required value="{{ form.check_in_date.value|default:'' }}">
+                </div>
             
-            <!-- Check-in Date Field -->
-            <div class="form-group mr-3">
-                <label for="checkInDate" class="mr-2">Check-In</label>
-                <input type="date" class="form-control w3-input w3-border" id="checkInDate" name="check_in" required>
-            </div>
-        
-            <!-- Check-out Date Field -->
-            <div class="form-group mr-3">
-                <label for="checkOutDate" class="mr-2">Check-Out</label>
-                <input type="date" class="form-control" id="checkOutDate" name="check_out" required>
-            </div>
-        
-            <!-- Submit Button -->
-            <button type="submit" class="btn btn-primary">Check Availability</button>
+                <!-- Check-Out Date field -->
+                <div class="form-group mr-3">
+                    <label for="{{ form.check_out_date.id_for_label }}" class="mr-2">Check-Out</label>
+                    <input type="date" class="form-control w3-input w3-border" id="{{ form.check_out_date.id_for_label }}" name="{{ form.check_out_date.name }}" required value="{{ form.check_out_date.value|default:'' }}">
+                </div>
+            
+                <!-- Submit button -->
+                <button type="submit" class="btn btn-primary">Book Now</button>
+            </form>
+        {% else %}
+            <form method="post" action="{% url 'bookings:check_availability' %}" class="form-inline mt-5">
+                {% csrf_token %}
+                
+                <!-- Check-In Date field -->
+                <div class="form-group mr-3">
+                    <label for="{{ form.check_in_date.id_for_label }}" class="mr-2">Check-In</label>
+                    <input type="date" class="form-control w3-input w3-border" id="{{ form.check_in_date.id_for_label }}" name="{{ form.check_in_date.name }}" required value="{{ form.check_in_date.value|default:'' }}">
+                </div>
+            
+                <!-- Check-Out Date field -->
+                <div class="form-group mr-3">
+                    <label for="{{ form.check_out_date.id_for_label }}" class="mr-2">Check-Out</label>
+                    <input type="date" class="form-control w3-input w3-border" id="{{ form.check_out_date.id_for_label }}" name="{{ form.check_out_date.name }}" required value="{{ form.check_out_date.value|default:'' }}">
+                </div>
+            
+                <!-- Submit button -->
+                <button type="submit" class="btn btn-primary">Check availability</button>
+            </form>
+            {% if messages %}
+                <ul class="messages">
+                    {% for message in messages %}
+                        <script>
+                            Swal.fire({
+                                title: 'Available',
+                                text: '{{ message }}',
+                                icon: 'success',
+                                confirmButtonText: 'Okay'
+                            })
+                        </script>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        {% endif %}
 
-        </form>
-
-        <form class="form-inline mt-5" id="availabilityForm" action="{% url 'bookings:single_apartment' %}" method="get">
-            {% csrf_token %}
-            <!-- Check-in Date Field -->
-            <div class="form-group mr-3">
-                <label for="checkInDate" class="mr-2">Check-In</label>
-                <input type="date" class="form-control w3-input w3-border" id="checkInDate" name="check_in_date" required>
-            </div>
-        
-            <!-- Check-out Date Field -->
-            <div class="form-group mr-3">
-                <label for="checkOutDate" class="mr-2">Check-Out</label>
-                <input type="date" class="form-control" id="checkOutDate" name="check_out_date" required>
-            </div>
-        
-            <!-- Submit Button -->
-            <button type="submit" class="btn btn-primary">Check Availability</button>
-
-        </form>
-        
         
 
 
@@ -245,13 +285,23 @@
 
 
 <script>
-  
+    
     // Activate datepickers for the input fields
     $(document).ready(function () {
         $('.datepicker').datepicker();
     });
 
+    console.log('Script is running')
+    document.getElementById("monthSelector").addEventListener("change", function() {
+        console.log("Change event detected");
+        const selectedPrice = this.value;
+        console.log("Selected Price: ", selectedPrice);
+        document.getElementById("priceDisplay").innerHTML = selectedPrice;
+    });
 
+
+    //Initalize with the first month's price on page load
+    document.getElementById("priceDisplay").textContent  =document.getElementById("monthSelector").value;
 
 
 </script>
