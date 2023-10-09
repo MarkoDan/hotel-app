@@ -29,11 +29,13 @@ class Booking(models.Model):
     apartment = models.ForeignKey(Apartment, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     number_of_guests = models.PositiveIntegerField(null=True, blank=True)
+    booking_date = models.DateField(auto_now_add=True, null=True)
     check_in_date = models.DateField()
     check_out_date = models.DateField()
     total_price = models.DecimalField(max_digits=9, decimal_places=2, null=True, blank=True)
     stripe_charge_id = models.CharField(max_length=50, blank=True, null=True)
-    idempotency_key = models.CharField(max_length=255, unique=True)
+    idempotency_key = models.CharField(max_length=255, unique=True, null=True, blank=True)
+    
 
     STATUS_CHOISES = (
         ('confirmed', 'Confirmed'),

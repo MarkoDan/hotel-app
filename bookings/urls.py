@@ -35,9 +35,17 @@ urlpatterns = [
 
     path('password_change/done/', PasswordChangeDoneView.as_view(template_name='password_change_done.html'), name='password_change_done'),
     #Password reset links
-    path('password-reset/', authentication_views.PasswordResetView.as_view(template_name='registration/password_reset.html',success_url=reverse_lazy('bookings:password_reset_done')), name='password_reset'),
+    path('password-reset/', authentication_views.PasswordResetView.as_view(
+        template_name='registration/password_reset.html',
+        success_url=reverse_lazy('bookings:password_reset_done'),
+        email_template_name='registration/password_reset_email.html'
+    ), name='password_reset'),
+
     path('password-reset/done/', authentication_views.PasswordResetDoneView.as_view(template_name='registration/password_reset_done.html'), name='password_reset_done'),
-    path('password-reset-confirm/<uidb64>/<token>', authentication_views.PasswordResetConfirmView.as_view(template_name='registration/password_reset_confirm.html'), name='password_reset_confirm'),
+    path('password-reset-confirm/<uidb64>/<token>', authentication_views.PasswordResetConfirmView.as_view(
+        template_name='registration/password_reset_confirm.html',
+        success_url=reverse_lazy('bookings:password_reset_complete')
+    ), name='password_reset_confirm'),
     path('password_reset_complete/', authentication_views.PasswordResetCompleteView.as_view(template_name='registration/password_reset_complete.html'), name='password_reset_complete'),
 
     #payment urls

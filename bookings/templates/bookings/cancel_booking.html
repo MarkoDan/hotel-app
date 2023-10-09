@@ -1,12 +1,19 @@
 {% extends "bookings/base.html" %}
 
 {% block content %}
-    <h2>Cancel Booking</h2>
-    <p>Are you sure you want to cancel your booking for {{ booking.property_name }}?</p>
-    
-    <form method="post">
+
+<div class="container mt-5">
+    <h2 class="mb-4">Cancel Booking</h2>
+
+    <div class="alert alert-light border mb-4">
+        <p>Are you sure you want to cancel your booking for <strong>{{ booking.check_in_date }} - {{booking.check_out_date}}</strong>?</p>
+    </div>
+
+    <form method="post" class="mb-3">
         {% csrf_token %}
-        <button type="submit">Yes, Cancel Booking</button>
+        <button type="submit" class="btn btn-danger">Yes, Cancel Booking</button>
     </form>
-    <a href="{% url 'bookings:home' %}">No, Go Back</a>
+    <a href="{% url 'bookings:display_bookings' %}" class="btn btn-secondary">No, Go Back</a>
+</div>
+
 {% endblock %}

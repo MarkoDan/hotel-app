@@ -6,8 +6,8 @@
 
 <style>
 
-    body,h1,h2,h3,h4,h5,h6 {font-family: "Raleway", Arial, Helvetica, sans-serif,}
-    body,h1,h2,h3,h4,h5,h6 {font-size: large;}
+    /* body,h1,h2,h3,h4,h5,h6 {font-family: "Raleway", Arial, Helvetica, sans-serif,}
+
     body {
         font-family: 'Poppins', sans-serif;
         color: #333333;
@@ -17,9 +17,8 @@
         font-weight: 700;
     }
 
-    /* Background */
+
     .container{
-      background-color: #f2f2f2;
       padding: 50px 15px;
       border-radius: 0px;
       box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.0);
@@ -28,17 +27,17 @@
     }
 
     footer .container {
-   background-color: transparent;  /* Or any other styles you want to reset */
-   /* other properties to reset or override */
+   background-color: transparent;  
+
    box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.0);
   }
 
 
-    /* Carousel Styles */
+
     .carousel-container {
         position: relative;
         width: 100%;
-        padding-top: 60%;  /* 3:2 aspect ratio */
+        padding-top: 60%;
         overflow: hidden;
         height: 400px;
     }
@@ -51,151 +50,205 @@
         height: 100%;
         width: 100%;
         object-fit: cover;
+    } */
+
+    .map-container {
+        position: relative;
+        overflow: hidden;
+        padding-top: 56.25%;
+        margin-bottom: 30px;
+    }
+    .map-container iframe {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        border: 0;
     }
 
+
+    .carousel-container {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: auto;
+        padding-top: 0; 
+    }
+    .carousel-img {
+        border-radius: 15px;
+        width: 100%;
+        max-height: 600px;  
+        object-fit: contain;
+        margin: 0 auto;
+    }
+
+    /* Container for the entire carousel */
+    #apartmentImagesCarousel {
+        overflow: hidden;
+        max-width: 100%;
+    }
+
+    /* Carousel Inner styles */
+    .carousel-inner {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 200%; 
+    left: -50%; /* Move it left to center the active image */
+}
+
+.carousel-item {
+    flex: 0 0 40%;  /* Adjust the width of side images */
     
-    /* Datepicker */
-    .datepicker-container {
-    display: none;
-    position: absolute;
-    background-color: white;
-    border: 1px solid #ccc;
-  }
-  .datepicker-day {
-      display: inline-block;
-      width: 30px;
-      height: 30px;
-      text-align: center;
-      vertical-align: top;
-  }
-  .datepicker-day.unavailable {
-      background-color: red;
-  }
+}
+
+    /* Styles for the active item (centered image) */
+    .carousel-item.active {
+        flex: 0 0 100%; /* occupy full width of its parent */
+        opacity: 1;    /* full opacity for active item */
+        transform: scale(1);  /* no scaling for active item */
+        z-index: 2;   /* ensure it's on top */
+    }
 
   
 
 
 </style>
 
-<!-- {% if messages %}
-<div class="container mt-5">
-    {% for message in messages %}
-    <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %}">
-        {{ message }}
-    </div>
-    {% endfor %}
-</div>
-{% endif %} -->
-
-
-
 
 <div class="container mt-5">
     <div class="row">
 
         <div class="col-lg-12">
-            <div id="apartmentImagesCarousel" class="carousel slide" data-ride="carousel">
+            <div id="apartmentImagesCarousel" class="carousel slide carousel-fade" data-ride="carousel">
+                
                 <!-- Indicators or Dots -->
                 <ol class="carousel-indicators">
                     {% for image in apartment.images.all %}
-                        <li data-target="#apartmentImagesCarousel" data-slide-to="{{ forloop.counter0 }}" {% if forloop.first %}class="active"{% endif %}></li>
+                        <li data-target="#apartmentImagesCarousel" data-slide-to="{{ forloop.counter0 }}" class="{% if forloop.first %}active{% endif %}"></li>
                     {% endfor %}
                 </ol>
-
+        
                 <!-- Slides -->
                 <div class="carousel-inner">
                     {% for image in apartment.images.all %}
                         <div class="carousel-item {% if forloop.first %}active{% endif %}">
-                            <div class="carousel-container">
-                                <img src="{{ image.image.url }}" class="carousel-img" alt="Apartment Image">
-                            </div>
+                            <a href="#" data-toggle="modal" data-target="#imageModal{{ forloop.counter }}">
+                                <img src="{{ image.image.url }}" class="carousel-img img-fluid" alt="Apartment Image">
+
+                            </a>
                         </div>
                     {% endfor %}
+
                 </div>
+
+                <!-- Previous Control -->
+                <a class="carousel-control-prev" href="#apartmentImagesCarousel" role="button" data-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="sr-only">Previous</span>
+                </a>
+
+                <!-- Next Control -->
+                <a class="carousel-control-next" href="#apartmentImagesCarousel" role="button" data-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="sr-only">Next</span>
+                </a>
             </div>
         </div>
+
+       
+
+
         
+        
+      
+
+      <!-- Price display -->
+      <div class="col-12 mt-5">
+        <h4><strong>Price By Month</strong></h4>
+        <label for="monthSelector">Select Month:</label>
+        <select id="monthSelector" class="form-control" style="width: 50%; max-width: 300px;">
+            <!-- Option list... (no changes) -->
+            {% for pricing in apartment.monthly_prices.all %}
+                <option value="{{ pricing.price }}">{{ pricing.get_month_display }}</option>
+            {% endfor %}
+        </select>
+        <h5 class="mt-3">Price: €<span id="priceDisplay"></span> per night</h5>
+      </div>
+               
+
+      <div class="col-12 mt-5">
+                {% if user.is_authenticated %}
+                <form method="post" action="{% url 'bookings:book_apartment' %}" class="form-inline mt-5">
+                    {% csrf_token %}
+                    
+                    <!-- Number of Guests field (assuming you want this in your form) -->
+                    <div class="form-group mr-3">
+                        <label for="{{ form.number_of_guests.id_for_label }}" class="mr-2">Number of Guests</label>
+                        <input type="number" class="form-control w3-input w3-border" id="{{ form.number_of_guests.id_for_label }}" name="{{ form.number_of_guests.name }}" required min="1" value="{{ form.number_of_guests.value|default:'' }}">
+                    </div>
+                            
+                    
+                    <!-- Check-In Date field -->
+                    <div class="form-group mr-3">
+                        <label for="{{ form.check_in_date.id_for_label }}" class="mr-2">Check-In</label>
+                        <input type="date" class="form-control w3-input w3-border" id="{{ form.check_in_date.id_for_label }}" name="{{ form.check_in_date.name }}" required value="{{ form.check_in_date.value|default:'' }}">
+                    </div>
+                
+                    <!-- Check-Out Date field -->
+                    <div class="form-group mr-3">
+                        <label for="{{ form.check_out_date.id_for_label }}" class="mr-2">Check-Out</label>
+                        <input type="date" class="form-control w3-input w3-border" id="{{ form.check_out_date.id_for_label }}" name="{{ form.check_out_date.name }}" required value="{{ form.check_out_date.value|default:'' }}">
+                    </div>
+                
+                    <!-- Submit button -->
+                    <button type="submit" class="btn btn-primary">Book Now</button>
+                </form>
+            {% else %}
+                <form method="post" action="{% url 'bookings:check_availability' %}" class="form-inline mt-5">
+                    {% csrf_token %}
+                    
+                    <!-- Check-In Date field -->
+                    <div class="form-group mr-3">
+                        <label for="{{ form.check_in_date.id_for_label }}" class="mr-2">Check-In</label>
+                        <input type="date" class="form-control w3-input w3-border" id="{{ form.check_in_date.id_for_label }}" name="{{ form.check_in_date.name }}" required value="{{ form.check_in_date.value|default:'' }}">
+                    </div>
+                
+                    <!-- Check-Out Date field -->
+                    <div class="form-group mr-3">
+                        <label for="{{ form.check_out_date.id_for_label }}" class="mr-2">Check-Out</label>
+                        <input type="date" class="form-control w3-input w3-border" id="{{ form.check_out_date.id_for_label }}" name="{{ form.check_out_date.name }}" required value="{{ form.check_out_date.value|default:'' }}">
+                    </div>
+                
+                    <!-- Submit button -->
+                    <button type="submit" class="btn btn-primary">Check availability</button>
+                </form>
+                {% if messages %}
+                    <ul class="messages">
+                        {% for message in messages %}
+                            <script>
+                                Swal.fire({
+                                    title: 'Available',
+                                    text: '{{ message }}',
+                                    icon: 'success',
+                                    confirmButtonText: 'Okay'
+                                })
+                            </script>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            {% endif %}
+
       </div>
 
-        <div class="container mt-5">
-            <h4><strong>Price By Month</strong></h4>
-            <label for="monthSelector">Select Month:</label>
-            <select id="monthSelector" class="form-control">
-                {% for pricing in apartment.monthly_prices.all %}
-                    <option value="{{ pricing.price }}">{{ pricing.get_month_display }}</option>
-                {% endfor %}
-            </select>
-            <h5 class="mt-3">Price: €<span id="priceDisplay">{{ apartment.monthly_prices.first.price }}</span> per night</h5>            
-        </div>
-    
-
-        {% if user.is_authenticated %}
-            <form method="post" action="{% url 'bookings:book_apartment' %}" class="form-inline mt-5">
-                {% csrf_token %}
-                
-                <!-- Number of Guests field (assuming you want this in your form) -->
-                <div class="form-group mr-3">
-                    <label for="{{ form.number_of_guests.id_for_label }}" class="mr-2">Number of Guests</label>
-                    <input type="number" class="form-control w3-input w3-border" id="{{ form.number_of_guests.id_for_label }}" name="{{ form.number_of_guests.name }}" required min="1" value="{{ form.number_of_guests.value|default:'' }}">
-                </div>
-                        
-                
-                <!-- Check-In Date field -->
-                <div class="form-group mr-3">
-                    <label for="{{ form.check_in_date.id_for_label }}" class="mr-2">Check-In</label>
-                    <input type="date" class="form-control w3-input w3-border" id="{{ form.check_in_date.id_for_label }}" name="{{ form.check_in_date.name }}" required value="{{ form.check_in_date.value|default:'' }}">
-                </div>
-            
-                <!-- Check-Out Date field -->
-                <div class="form-group mr-3">
-                    <label for="{{ form.check_out_date.id_for_label }}" class="mr-2">Check-Out</label>
-                    <input type="date" class="form-control w3-input w3-border" id="{{ form.check_out_date.id_for_label }}" name="{{ form.check_out_date.name }}" required value="{{ form.check_out_date.value|default:'' }}">
-                </div>
-            
-                <!-- Submit button -->
-                <button type="submit" class="btn btn-primary">Book Now</button>
-            </form>
-        {% else %}
-            <form method="post" action="{% url 'bookings:check_availability' %}" class="form-inline mt-5">
-                {% csrf_token %}
-                
-                <!-- Check-In Date field -->
-                <div class="form-group mr-3">
-                    <label for="{{ form.check_in_date.id_for_label }}" class="mr-2">Check-In</label>
-                    <input type="date" class="form-control w3-input w3-border" id="{{ form.check_in_date.id_for_label }}" name="{{ form.check_in_date.name }}" required value="{{ form.check_in_date.value|default:'' }}">
-                </div>
-            
-                <!-- Check-Out Date field -->
-                <div class="form-group mr-3">
-                    <label for="{{ form.check_out_date.id_for_label }}" class="mr-2">Check-Out</label>
-                    <input type="date" class="form-control w3-input w3-border" id="{{ form.check_out_date.id_for_label }}" name="{{ form.check_out_date.name }}" required value="{{ form.check_out_date.value|default:'' }}">
-                </div>
-            
-                <!-- Submit button -->
-                <button type="submit" class="btn btn-primary">Check availability</button>
-            </form>
-            {% if messages %}
-                <ul class="messages">
-                    {% for message in messages %}
-                        <script>
-                            Swal.fire({
-                                title: 'Available',
-                                text: '{{ message }}',
-                                icon: 'success',
-                                confirmButtonText: 'Okay'
-                            })
-                        </script>
-                    {% endfor %}
-                </ul>
-            {% endif %}
-        {% endif %}
-
+        
         
 
 
 
 
-        <div class="container">
+        <div class="col-12 mt-5">
           <h4><strong>The space</strong></h4>
           <div class="row">
               <div class="col-sm-6">
@@ -210,9 +263,9 @@
               </div>
           </div>
           <hr>
-      </div>
+        </div>
 
-        <div class="container">
+        <div class="col-12 mt-5">
             <h4><strong>Amenities</strong></h4>
             <div class="row">
                     <div class="col-sm-6">
@@ -249,12 +302,12 @@
             </div>
         
         </div>
-        <div class="container mt-5">
+        <div class="col-12 mt-5">
             <h4><strong>More Info</strong></h4>
             <p>{{apartment.description}}</p>
         </div>
 
-        <div class="container mt-5">
+        <div class="col-12 mt-5">
             <h4><strong>Contact Us</strong></h4>
     
             <p>Address: 123 Hotel Street, City, Country</p>
@@ -264,8 +317,8 @@
 
         <div class="container mt-5">
             <h4><strong>Find us on Map</strong></h4>
-            <div style="width: 100%; height: 400px;">
-            <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3155.9481776045327!2d15.237524412069266!3d44.1045236709636!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x4761faf538fc803f%3A0x13ae80c1b07add8a!2sUl.%20Josipa%20Eugena%20Tomi%C4%87a%2022%2C%2023000%2C%20Zadar%2C%20Croatia!5e1!3m2!1sen!2sdk!4v1696413937067!5m2!1sen!2sdk" width="1000" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+            <div class="map-container">
+                <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3155.9481776045327!2d15.237524412069266!3d44.1045236709636!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x4761faf538fc803f%3A0x13ae80c1b07add8a!2sUl.%20Josipa%20Eugena%20Tomi%C4%87a%2022%2C%2023000%2C%20Zadar%2C%20Croatia!5e1!3m2!1sen!2sdk!4v1696413937067!5m2!1sen!2sdk" width="1000" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
             </div>
         </div>
 
@@ -273,12 +326,20 @@
     </div>
 
 
-
-
         
 </div>
 
-
+{% for image in apartment.images.all %}
+<div class="modal fade" id="imageModal{{ forloop.counter }}" tabindex="-1" role="dialog" aria-labelledby="imageModalLabel{{ forloop.counter }}" aria-hidden="true">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-body">
+                <img src="{{ image.image.url }}" class="img-fluid" alt="Apartment Image">
+            </div>
+        </div>
+    </div>
+</div>
+{% endfor %}
 
 
 

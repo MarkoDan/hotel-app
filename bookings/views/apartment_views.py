@@ -16,6 +16,9 @@ from django.utils.decorators import method_decorator
 from django.views import View
 import json
 import logging
+from django.template.loader import render_to_string
+from django.core.mail import send_mail
+
 
 logger = logging.getLogger(__name__)
 
@@ -56,7 +59,9 @@ def book_apartment(request):
             
             # check if the apartment is already booked
             overlapping_bookings = Booking.objects.filter(
-                check_in_date__lt=check_out_date, check_out_date__gt=check_in_date
+                check_in_date__lt=check_out_date, 
+                check_out_date__gt=check_in_date,
+                status='confirmed'
             )
 
             if overlapping_bookings.exists():
@@ -120,7 +125,7 @@ def booking_failed(request):
     return render(request, 'bookings/booking_failed.html')
 
 def display_bookings(request):
-    bookings = Booking.objects.all()
+    bookings = Booking.objects.filter(user=request.user)
     return render(request, 'bookings/display_bookings.html', {'bookings': bookings})
 
 
@@ -203,53 +208,30 @@ def is_apartment_available_for_dates(apartment, check_in, check_out):
     return is_apartment_available(apartment, check_in, check_out)
 
 
-#Payment logic
-# def start_payment(request):
-#     stripe.api_key = settings.STRIPE_SECRET_KEY
 
-#     temp_booking = request.session.get('temp_booking')
-#     if not temp_booking:
-#         return redirect('bookings:book_apartment') # Redirect back if no temp booking in session
+
+
+def send_custom_email(subject, message, to_email_list, from_email=None):
+    """
+    Sends an email using the Django send_mail function with the Mailjet backend.
+
+    Args:
+    - subject (str): Subject of the email.
+    - message (str): Plain text body of the email.
+    - to_email_list (list): List of recipient email addresses.
+    - from_email (str, optional): Sender's email address. Defaults to the DEFAULT_FROM_EMAIL setting.
+
+    Returns:
+    - int: Number of successfully sent emails.
+    """
     
-#     if request.method == "POST":
-#         #Retrieve payment information from the form, for example, payment_method_id
-#         payment_method_id = request.POST.get('payment_method_id')
+    # Use the default from_email if none provided
+    if not from_email:
+        from django.conf import settings
+        from_email = settings.DEFAULT_FROM_EMAIL
 
-#         #Create PaymentIntent to initiate payment
-#         payment_intent = stripe.PaymentIntent.create(
-#             amount = int(temp_booking['total_price'] * 100),
-#             currency = 'eur',
-#             payment_method=payment_method_id,
-#             confirm=True
-#         )
-
-#         if payment_intent.status == 'succeeded':
-#             #Save booking to DB and clear temp_booking from the session
-#             booking = Booking(
-#                 apartment=Apartment.objects.get(id=temp_booking['apartment_id']),
-#                 user=User.objects.get(id=temp_booking['user_id']),
-#                 check_in_date=temp_booking['check_in_date'],
-#                 check_out_date=temp_booking['check_out_date'],
-#                 number_of_guests=temp_booking['number_of_guests'],
-#                 total_price=temp_booking['total_price']
-#             )
-#             booking.save()
-#             #Clear the temporary booking data from the session
-#             del request.session['temp_booking']
-#             messages.success(request, 'Payment successful and apartment booked!')
-#             return redirect('bookings:booking_success')
-
-#         else:
-#             messages.error(request, 'Payment failed. Please try again')
-    
-#     context = {
-#         'apartment': Apartment.objects.get(id=temp_booking['apartment_id']),
-#         'total_price': temp_booking['total_price'],
-#         'check_in_date': temp_booking['check_in_date'],
-#         'check_out_date': temp_booking['check_out_date'],
-#         'stripe_public_key': settings.STRIPE_PUBLIC_KEY,
-#     }
-#     return render(request, 'bookings/start_payment.html', context)
+    # Send the email
+    return send_mail(subject, message, from_email, to_email_list)
 
 def start_payment(request):
     stripe.api_key = settings.STRIPE_SECRET_KEY
@@ -315,56 +297,121 @@ class StripeWebhook(View):
 
 
 def handle_checkout_session(session):
-    logger.info(f"Handling session {session.id}")
-    temp_booking = json.loads(session.metadata['temp_booking'])
-    idempotency_key = session.metadata.get('idempotency_key')
+    try:
+        logger.info("handle_checkout_session has been called.")
+        temp_booking = json.loads(session.metadata['temp_booking'])
+        logger.info(f"Temp booking data: {temp_booking}")
+        idempotency_key = session.metadata.get('idempotency_key')
+        logger.info(f"Idempotency key: {idempotency_key}")
 
-    if Booking.objects.filter(idempotency_key=idempotency_key).exists():
-        logger.info(f"Booking already processed for idempotency key {idempotency_key}")
-        return
 
-    #Save booking to DB
-    booking = Booking(
-        apartment=Apartment.objects.get(id=temp_booking['apartment_id']),
-        user=User.objects.get(id=temp_booking['user_id']),
-        check_in_date=datetime.strptime(temp_booking['check_in_date'], '%Y-%m-%d').date(),
-        check_out_date=datetime.strptime(temp_booking['check_out_date'], '%Y-%m-%d').date(),
-        number_of_guests=temp_booking['number_of_guests'],
-        total_price=temp_booking['total_price'],
-        stripe_charge_id=session.payment_intent,
-        idempotency_key=idempotency_key
-    )
-    booking.save()
-    logger.info(f"Booking saved with ID {booking.id}")
+        if Booking.objects.filter(idempotency_key=idempotency_key).exists():
+            logger.info(f"Booking already processed for idempotency key {idempotency_key}")
+            return
+
+        #Save booking to DB
+        booking = Booking(
+            apartment=Apartment.objects.get(id=temp_booking['apartment_id']),
+            user=User.objects.get(id=temp_booking['user_id']),
+            check_in_date=datetime.strptime(temp_booking['check_in_date'], '%Y-%m-%d').date(),
+            check_out_date=datetime.strptime(temp_booking['check_out_date'], '%Y-%m-%d').date(),
+            number_of_guests=temp_booking['number_of_guests'],
+            total_price=temp_booking['total_price'],
+            stripe_charge_id=session.payment_intent,
+            idempotency_key=idempotency_key
+        )
+        booking.save()
+        logger.info(f"Booking saved with ID {booking.id}")
+
+        user_email = User.objects.get(id=temp_booking['user_id']).email
+        apartment = Apartment.objects.get(id=temp_booking['apartment_id'])
+        user = User.objects.get(id=temp_booking['user_id'])
+        check_in_date = datetime.strptime(temp_booking['check_in_date'], '%Y-%m-%d').date()
+        check_out_date = datetime.strptime(temp_booking['check_out_date'], '%Y-%m-%d').date()
+        number_of_guests = temp_booking['number_of_guests']
+        total_price = temp_booking['total_price']
+        subject = 'Booking Confirmation'
+        message = f"""
+        Dear {user.first_name},
+
+        We are pleased to inform you that your booking for the apartment has been confirmed.
+
+        Details of your booking:
+        - Check-in Date: {check_in_date.strftime('%B %d, %Y')}
+        - Check-out Date: {check_out_date.strftime('%B %d, %Y')}
+        - Number of Guests: {number_of_guests}
+        - Total Price: ${total_price}
+
+        Thank you for choosing us. We are looking forward to hosting you!
+
+        Best regards,
+        Your Hotel Team
+        """
+        send_custom_email(subject,message,[user_email])
+
+    except Exception as e:
+        logger.error(f"Error while processing the checkout session: {e}")
+    
 
 def cancel_booking(request, booking_id):
     stripe.api_key = settings.STRIPE_SECRET_KEY  
     
     booking = get_object_or_404(Booking, id=booking_id, user=request.user)
-    if request.method == "POST" and booking.status == "confirmed":
 
+    days_since_booking = (date.today() - booking.booking_date).days
+    if days_since_booking <= 30:
+    
+        if request.method == "POST" and booking.status == "confirmed":
 
-        if booking.stripe_charge_id:
-            try:
+            if booking.stripe_charge_id:
+                try:
+                    payment_intent = stripe.PaymentIntent.retrieve(booking.stripe_charge_id)
+                    latest_charge_id = payment_intent["latest_charge"]
+                    
+                    # Check if the charge has already been refunded
+                    charge = stripe.Charge.retrieve(latest_charge_id)
+                    if not charge.refunded:
+                        refund = stripe.Refund.create(charge=latest_charge_id)
+                        arn = refund.get('acquirer_reference_number', 'N/A')
+                    else:
+                        messages.error(request, "This charge has already been refunded.")
+                        return redirect('bookings:home')
 
-                payment_intent = stripe.PaymentIntent.retrieve(booking.stripe_charge_id)
+                except Exception as e:
+                    messages.error(request, "There was an error processing the refund.")
+                    return redirect('bookings:home')
 
-                # Retrieve the latest charge ID from the payment intent
-                latest_charge_id = payment_intent["latest_charge"]
-                
-                stripe.Refund.create(charge=latest_charge_id)
+            # Update the booking status
+            booking.status = 'cancelled'
+            booking.save()
 
-            except Exception as e:
-                messages.error(request, "There was an error processing the refund.")
-                return redirect('bookings:home')
+            # Send a confirmation email to the user
+            user_email = request.user.email
+            email_subject = "Booking Cancellation and Refund"
+            email_message = f"""
+            Dear {request.user.first_name},
+            
+            Your booking for {booking.check_in_date} to {booking.check_out_date} has been successfully cancelled.
+            
+            We have issued a refund for your booking. Below are the refund details:
 
-        #Update the booking status
-        booking.status = 'cancelled'
-        booking.save()
+            - **Payment Status:** Refunded
+            - **Acquirer Reference Number (ARN):** {arn}
+            - **Expected Settlement Time:** It may take 5-10 business days for funds to settle in your account. Please note that the exact timing can vary depending on your bank.
 
-        #Send a confirmation email to the user
-        #(Use django's email functionality)
-        messages.success(request, "Booking cancelled and refund issued.")
-        return redirect('bookings:home')
+            It may take a few days for the money to reach your bank account. If you do not see the refund after 10 business days, we recommend contacting your bank with the ARN provided for more details.
+
+            If you have any other questions or concerns, please don't hesitate to contact us.
+            Best regards,
+            [Your Hotel Name]
+            """
+
+            send_custom_email(email_subject, email_message, [user_email])
+
+            messages.success(request, "Booking cancelled and refund issued.")
+            return redirect('bookings:display_bookings')
+    else:
+        messages.error(request, "Bookings can only be cancelled and refunded up to 30 days after the booking date.")
+        return redirect('bookings:display_bookings')
     
     return render(request, 'bookings/cancel_booking.html', {'booking': booking})
