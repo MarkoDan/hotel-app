@@ -10,12 +10,13 @@ class ProfileForm(forms.ModelForm):
         fields = ['username', 'email', 'first_name', 'last_name']
 
 class BookingForm(forms.ModelForm):
-    number_of_guests = forms.IntegerField(required=True, min_value=1,)
+    number_of_adults = forms.IntegerField(required=True, min_value=1, max_value=4)
+    number_of_kids = forms.IntegerField(required=False, min_value=1, max_value=2)
     check_in_date = forms.DateField(widget=forms.TextInput(attrs={'class': 'date-picker'}))
     check_out_date = forms.DateField(widget=forms.TextInput(attrs={'class': 'date-picker'}))
     class Meta:
         model = Booking
-        fields = ['number_of_guests', 'check_in_date', 'check_out_date']
+        fields = ['number_of_adults', 'number_of_kids', 'check_in_date', 'check_out_date']
 
     def clean_check_in_date(self):
         check_in_date = self.cleaned_data.get('check_in_date')

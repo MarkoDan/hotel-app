@@ -9,12 +9,14 @@ class Apartment(models.Model):
     description = models.TextField()
     price_per_night = models.DecimalField(max_digits=7, decimal_places=2)
     image = models.ImageField(upload_to='apartments/')
+    maximum_number_of_adults = models.PositiveIntegerField(null=True, blank=True)
+    maximum_number_of_kids = models.PositiveIntegerField(null=True, blank=True)
     number_of_rooms = models.PositiveIntegerField(null=True, blank=True)
     number_of_bedrooms = models.PositiveIntegerField(null=True, blank=True)
+    number_of_bathrooms = models.PositiveIntegerField(null=True, blank=True)
     size_of_bedrooms = models.DecimalField(max_digits=7, decimal_places=2, null=True, blank=True, verbose_name="Bedroom Size (in sqm)")
     size_of_balcony = models.DecimalField(max_digits=7, decimal_places=2, null=True, blank=True, verbose_name="Balcony Size (in sqm)")
 
-    maximum_number_of_guests = models.PositiveIntegerField(null=True, blank=True)
 
     #Amenities
     wifi = models.BooleanField(default=True, verbose_name='WIFI')
@@ -28,7 +30,8 @@ class Apartment(models.Model):
 class Booking(models.Model):
     apartment = models.ForeignKey(Apartment, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    number_of_guests = models.PositiveIntegerField(null=True, blank=True)
+    number_of_adults = models.PositiveIntegerField(null=True, blank=True)
+    number_of_kids = models.PositiveIntegerField(null=True, blank=True)
     booking_date = models.DateField(auto_now_add=True, null=True)
     check_in_date = models.DateField()
     check_out_date = models.DateField()

@@ -4,257 +4,165 @@
 {% block content %}
 {% load widget_tweaks %}
 
+
 <style>
 
-    /* body,h1,h2,h3,h4,h5,h6 {font-family: "Raleway", Arial, Helvetica, sans-serif,}
 
-    body {
-        font-family: 'Poppins', sans-serif;
-        color: #333333;
+    .form-group label {
+        display: block;
+        margin-bottom: 5px;
     }
 
-    h1, h2, h3, h4, h5, h6 {
-        font-weight: 700;
-    }
-
-
-    .container{
-      padding: 50px 15px;
-      border-radius: 0px;
-      box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.0);
-
-
-    }
-
-    footer .container {
-   background-color: transparent;  
-
-   box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.0);
-  }
-
-
-
-    .carousel-container {
-        position: relative;
-        width: 100%;
-        padding-top: 60%;
-        overflow: hidden;
-        height: 400px;
-    }
-
-    .carousel-img {
-        border-radius: 15px;
-        position: absolute;
-        top: 0;
-        left: 0;
-        height: 100%;
-        width: 100%;
-        object-fit: cover;
-    } */
-
-    .map-container {
-        position: relative;
-        overflow: hidden;
-        padding-top: 56.25%;
-        margin-bottom: 30px;
-    }
-    .map-container iframe {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        border: 0;
+    .form-group {
+        margin-right: 0;
+        margin-bottom: 25px; 
     }
 
 
-    .carousel-container {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        height: auto;
-        padding-top: 0; 
+    @media (min-width: 480px) {
+        .form-inline .form-group {
+            display: inline-block;
+            vertical-align: top;
+        }
     }
-    .carousel-img {
-        border-radius: 15px;
-        width: 100%;
-        max-height: 600px;  
-        object-fit: contain;
-        margin: 0 auto;
-    }
-
-    /* Container for the entire carousel */
-    #apartmentImagesCarousel {
-        overflow: hidden;
-        max-width: 100%;
-    }
-
-    /* Carousel Inner styles */
-    .carousel-inner {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 200%; 
-    left: -50%; /* Move it left to center the active image */
-}
-
-.carousel-item {
-    flex: 0 0 40%;  /* Adjust the width of side images */
-    
-}
-
-    /* Styles for the active item (centered image) */
-    .carousel-item.active {
-        flex: 0 0 100%; /* occupy full width of its parent */
-        opacity: 1;    /* full opacity for active item */
-        transform: scale(1);  /* no scaling for active item */
-        z-index: 2;   /* ensure it's on top */
-    }
-
-  
 
 
 </style>
 
-
 <div class="container mt-5">
     <div class="row">
-
-        <div class="col-lg-12">
-            <div id="apartmentImagesCarousel" class="carousel slide carousel-fade" data-ride="carousel">
-                
-                <!-- Indicators or Dots -->
-                <ol class="carousel-indicators">
-                    {% for image in apartment.images.all %}
-                        <li data-target="#apartmentImagesCarousel" data-slide-to="{{ forloop.counter0 }}" class="{% if forloop.first %}active{% endif %}"></li>
-                    {% endfor %}
-                </ol>
         
-                <!-- Slides -->
-                <div class="carousel-inner">
-                    {% for image in apartment.images.all %}
-                        <div class="carousel-item {% if forloop.first %}active{% endif %}">
-                            <a href="#" data-toggle="modal" data-target="#imageModal{{ forloop.counter }}">
-                                <img src="{{ image.image.url }}" class="carousel-img img-fluid" alt="Apartment Image">
+            <div class="col-lg-12">
+                <div id="apartmentImagesCarousel" class="carousel slide carousel-fade image-carousel" data-ride="carousel">
 
-                            </a>
-                        </div>
-                    {% endfor %}
-
-                </div>
-
-                <!-- Previous Control -->
-                <a class="carousel-control-prev" href="#apartmentImagesCarousel" role="button" data-slide="prev">
-                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                <span class="sr-only">Previous</span>
-                </a>
-
-                <!-- Next Control -->
-                <a class="carousel-control-next" href="#apartmentImagesCarousel" role="button" data-slide="next">
-                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                    <span class="sr-only">Next</span>
-                </a>
-            </div>
-        </div>
-
-       
-
-
-        
-        
-      
-
-      <!-- Price display -->
-      <div class="col-12 mt-5">
-        <h4><strong>Price By Month</strong></h4>
-        <label for="monthSelector">Select Month:</label>
-        <select id="monthSelector" class="form-control" style="width: 50%; max-width: 300px;">
-            <!-- Option list... (no changes) -->
-            {% for pricing in apartment.monthly_prices.all %}
-                <option value="{{ pricing.price }}">{{ pricing.get_month_display }}</option>
-            {% endfor %}
-        </select>
-        <h5 class="mt-3">Price: €<span id="priceDisplay"></span> per night</h5>
-      </div>
-               
-
-      <div class="col-12 mt-5">
-                {% if user.is_authenticated %}
-                <form method="post" action="{% url 'bookings:book_apartment' %}" class="form-inline mt-5">
-                    {% csrf_token %}
                     
-                    <!-- Number of Guests field (assuming you want this in your form) -->
-                    <div class="form-group mr-3">
-                        <label for="{{ form.number_of_guests.id_for_label }}" class="mr-2">Number of Guests</label>
-                        <input type="number" class="form-control w3-input w3-border" id="{{ form.number_of_guests.id_for_label }}" name="{{ form.number_of_guests.name }}" required min="1" value="{{ form.number_of_guests.value|default:'' }}">
-                    </div>
-                            
-                    
-                    <!-- Check-In Date field -->
-                    <div class="form-group mr-3">
-                        <label for="{{ form.check_in_date.id_for_label }}" class="mr-2">Check-In</label>
-                        <input type="date" class="form-control w3-input w3-border" id="{{ form.check_in_date.id_for_label }}" name="{{ form.check_in_date.name }}" required value="{{ form.check_in_date.value|default:'' }}">
-                    </div>
-                
-                    <!-- Check-Out Date field -->
-                    <div class="form-group mr-3">
-                        <label for="{{ form.check_out_date.id_for_label }}" class="mr-2">Check-Out</label>
-                        <input type="date" class="form-control w3-input w3-border" id="{{ form.check_out_date.id_for_label }}" name="{{ form.check_out_date.name }}" required value="{{ form.check_out_date.value|default:'' }}">
-                    </div>
-                
-                    <!-- Submit button -->
-                    <button type="submit" class="btn btn-primary">Book Now</button>
-                </form>
-            {% else %}
-                <form method="post" action="{% url 'bookings:check_availability' %}" class="form-inline mt-5">
-                    {% csrf_token %}
-                    
-                    <!-- Check-In Date field -->
-                    <div class="form-group mr-3">
-                        <label for="{{ form.check_in_date.id_for_label }}" class="mr-2">Check-In</label>
-                        <input type="date" class="form-control w3-input w3-border" id="{{ form.check_in_date.id_for_label }}" name="{{ form.check_in_date.name }}" required value="{{ form.check_in_date.value|default:'' }}">
-                    </div>
-                
-                    <!-- Check-Out Date field -->
-                    <div class="form-group mr-3">
-                        <label for="{{ form.check_out_date.id_for_label }}" class="mr-2">Check-Out</label>
-                        <input type="date" class="form-control w3-input w3-border" id="{{ form.check_out_date.id_for_label }}" name="{{ form.check_out_date.name }}" required value="{{ form.check_out_date.value|default:'' }}">
-                    </div>
-                
-                    <!-- Submit button -->
-                    <button type="submit" class="btn btn-primary">Check availability</button>
-                </form>
-                {% if messages %}
-                    <ul class="messages">
-                        {% for message in messages %}
-                            <script>
-                                Swal.fire({
-                                    title: 'Available',
-                                    text: '{{ message }}',
-                                    icon: 'success',
-                                    confirmButtonText: 'Okay'
-                                })
-                            </script>
+
+                    <ol class="carousel-indicators">
+                        {% for image in apartment.images.all %}
+                            <li data-target="#apartmentImagesCarousel" data-slide-to="{{ forloop.counter0 }}" class="{% if forloop.first %}active{% endif %}"></li>
                         {% endfor %}
-                    </ul>
+                    </ol>
+            
+
+                    <div class="carousel-inner">
+                        {% for image in apartment.images.all %}
+                            <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                                <a href="#" data-toggle="modal" data-target="#imageModal{{ forloop.counter }}">
+                                    <img src="{{ image.image.url }}" class="carousel-img img-fluid" alt="Apartment Image">
+
+                                </a>
+                            </div>
+                        {% endfor %}
+
+                    </div>
+
+
+                    <a class="carousel-control-prev" href="#apartmentImagesCarousel" role="button" data-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="sr-only">Previous</span>
+                    </a>
+
+
+                    <a class="carousel-control-next" href="#apartmentImagesCarousel" role="button" data-slide="next">
+                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                        <span class="sr-only">Next</span>
+                    </a>
+                </div>
+            </div> 
+            
+            
+                <!-- Price display -->
+                <div class="col-12 mt-5">
+                    <h4><strong>Price By Month</strong></h4>
+                    <label for="monthSelector">Select Month:</label>
+                    <select id="monthSelector" class="form-control" style="width: 50%; max-width: 300px;">
+                        <!-- Option list... (no changes) -->
+                        {% for pricing in apartment.monthly_prices.all %}
+                            <option value="{{ pricing.price }}">{{ pricing.get_month_display }}</option>
+                        {% endfor %}
+                    </select>
+                    <h5 class="mt-3">Price: €<span id="priceDisplay"></span> per night</h5>
+                </div>
+                   
+    
+            <div class="col-12 mt-5">
+                    {% if user.is_authenticated %}
+                        <form method="post" action="{% url 'bookings:book_apartment' %}" class="form-inline">
+                            {% csrf_token %}
+                            <div class="form-group mr-3">
+                                <label for="{{ form.number_of_adults.id_for_label }}">Number of Adults</label>
+                                <input type="number" class="form-control w3-input w3-border" id="{{ form.number_of_adults.id_for_label }}" name="{{ form.number_of_adults.name }}" required min="1" max="4" value="{{ form.number_of_adults.value|default:'' }}">
+                            </div>
+                            
+                            <div class="form-group mr-3">
+                                <label for="{{ form.number_of_kids.id_for_label }}">Number of Kids</label>
+                                <input type="number" class="form-control w3-input w3-border" id="{{ form.number_of_kids.id_for_label }}" name="{{ form.number_of_kids.name }}" min="0" max="2" value="{{ form.number_of_kids.value|default:'' }}">
+                            </div>
+                            
+                            <div class="form-group mr-3">
+                                <label for="{{ form.check_in_date.id_for_label }}">Check-In</label>
+                                <input type="date" class="form-control w3-input w3-border" id="{{ form.check_in_date.id_for_label }}" name="{{ form.check_in_date.name }}" required value="{{ form.check_in_date.value|default:'' }}">
+                            </div>
+                
+                            <div class="form-group mr-3">
+                                <label for="{{ form.check_out_date.id_for_label }}">Check-Out</label>
+                                <input type="date" class="form-control w3-input w3-border" id="{{ form.check_out_date.id_for_label }}" name="{{ form.check_out_date.name }}" required value="{{ form.check_out_date.value|default:'' }}">
+                            </div>
+                
+                            <button type="submit" class="btn btn-primary">Book Now</button>
+                        </form>
+                {% else %}
+                    <form method="post" action="{% url 'bookings:check_availability' %}" class="form-inline mt-5">
+                        {% csrf_token %}
+                        
+                        <!-- Check-In Date field -->
+                        <div class="form-group mr-3">
+                            <label for="{{ form.check_in_date.id_for_label }}" class="mr-2">Check-In</label>
+                            <input type="date" class="form-control w3-input w3-border" id="{{ form.check_in_date.id_for_label }}" name="{{ form.check_in_date.name }}" required value="{{ form.check_in_date.value|default:'' }}">
+                        </div>
+                    
+                        <!-- Check-Out Date field -->
+                        <div class="form-group mr-3">
+                            <label for="{{ form.check_out_date.id_for_label }}" class="mr-2">Check-Out</label>
+                            <input type="date" class="form-control w3-input w3-border" id="{{ form.check_out_date.id_for_label }}" name="{{ form.check_out_date.name }}" required value="{{ form.check_out_date.value|default:'' }}">
+                        </div>
+                    
+                        <!-- Submit button -->
+                        <button type="submit" class="btn btn-primary">Check availability</button>
+                    </form>
+                    {% if messages %}
+                        <ul class="messages">
+                            {% for message in messages %}
+                                <script>
+                                    Swal.fire({
+                                        title: 'Available',
+                                        text: '{{ message }}',
+                                        icon: 'success',
+                                        confirmButtonText: 'Okay'
+                                    })
+                                </script>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
                 {% endif %}
-            {% endif %}
-
-      </div>
-
-        
-        
+    
+            </div>
+         
 
 
+    
+          
+    
 
-
-        <div class="col-12 mt-5">
+        <div class="col-12 mt-5 shadow-lg p-3 mb-5 bg-white rounded">
           <h4><strong>The space</strong></h4>
           <div class="row">
               <div class="col-sm-6">
-                  <p><i class="fa fa-fw fa-male"></i> Max people: {{ apartment.max_people }}</p>
+                <!-- <p><i class="fa fa-fw fa-male"></i> Max people: {{ apartment.maximum_number_of_adults|default:0|add:apartment.maximum_number_of_kids|default:0 }}</p> -->
+                  <p><i class="fa fa-fw fa-male"></i><i class="fa fa-female" aria-hidden="true"></i> Adults: {{ apartment.maximum_number_of_adults }}</p>
+                  <p><i class="fa fa-fw fa-child"></i> Childs: {{ apartment.maximum_number_of_kids }}</p>
                   <p><i class="fa fa-fw fa-bath"></i>Number of Rooms: {{apartment.number_of_rooms}}</i></p>
-                  <p><i class="fa fa-fw fa-bath"></i> Bathrooms: {{ apartment.bathrooms }}</p>
+                  <p><i class="fa fa-fw fa-bath"></i> Bathrooms: {{ apartment.number_of_bathrooms }}</p>
                   <p><i class="fa fa-fw fa-bed"></i> Bedrooms: {{ apartment.number_of_bedrooms }} ({{ apartment.size_of_bedrooms }} sqm)</p>
               </div>
               <div class="col-sm-6">
@@ -265,7 +173,7 @@
           <hr>
         </div>
 
-        <div class="col-12 mt-5">
+        <div class="col-12 mt-5 shadow-lg p-3 mb-5 bg-white rounded">
             <h4><strong>Amenities</strong></h4>
             <div class="row">
                     <div class="col-sm-6">
@@ -302,12 +210,12 @@
             </div>
         
         </div>
-        <div class="col-12 mt-5">
+        <div class="col-12 mt-5 shadow-lg p-3 mb-5 bg-white rounded">
             <h4><strong>More Info</strong></h4>
             <p>{{apartment.description}}</p>
         </div>
 
-        <div class="col-12 mt-5">
+        <div class="col-12 mt-5 shadow-lg p-3 mb-5 bg-white rounded">
             <h4><strong>Contact Us</strong></h4>
     
             <p>Address: 123 Hotel Street, City, Country</p>
@@ -315,7 +223,7 @@
             <p>Email: hotel@example.com</p>
         </div>
 
-        <div class="container mt-5">
+        <div class="container mt-5 shadow-lg p-3 mb-5 bg-white rounded">
             <h4><strong>Find us on Map</strong></h4>
             <div class="map-container">
                 <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3155.9481776045327!2d15.237524412069266!3d44.1045236709636!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x4761faf538fc803f%3A0x13ae80c1b07add8a!2sUl.%20Josipa%20Eugena%20Tomi%C4%87a%2022%2C%2023000%2C%20Zadar%2C%20Croatia!5e1!3m2!1sen!2sdk!4v1696413937067!5m2!1sen!2sdk" width="1000" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
@@ -324,7 +232,6 @@
 
 
     </div>
-
 
         
 </div>
@@ -340,9 +247,6 @@
     </div>
 </div>
 {% endfor %}
-
-
-
 
 
 <script>
@@ -363,6 +267,20 @@
 
     //Initalize with the first month's price on page load
     document.getElementById("priceDisplay").textContent  =document.getElementById("monthSelector").value;
+
+    //images
+    function currentDiv(index) {
+        var slides = document.getElementsByClassName("mySlides");
+        for (var i = 0; i < slides.length; i++) {
+            slides[i].style.display = "none";
+        }
+        slides[index-1].style.display = "block";
+    }
+
+    //images
+
+
+</script>
 
 
 </script>

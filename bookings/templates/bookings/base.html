@@ -25,6 +25,8 @@
      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
      <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
      <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+      <!-- fonts -->
+      <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
 
 
      
@@ -34,43 +36,57 @@
 <body>
   <div id="content-wrap">
     {% block navbar %}
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-          <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-          <ul class="navbar-nav ml-auto">
-            <li class="nav-item active">
-              <a class="nav-link" href="{% url 'bookings:home' %}">Home</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="{% url 'bookings:book_apartment' %}">Book Now</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="{% url 'bookings:contact' %}">Contact</a>
-            </li>
-            {% if user.is_authenticated %}
-            <li class="nav-item">
-              <a href="{%url 'bookings:logout' %}" class="nav-link">{{ user.first_name }} (Logout)</a>
-            </li>
-            <li class="nav-item">
-              <a href="{% url 'bookings:profile' %}" class="nav-link">Profile</a>
-            </li>
-            <li class="nav-item">
-              <a href="{% url 'bookings:display_bookings' %}" class="nav-link">My Bookings</a>
-            </li>
-            {% else %}
-            <li class="nav-item">
-              <a href="{% url 'bookings:register' %}" class="nav-link">Register</a>
-            </li>
-            <li>
-              <a href="{% url 'bookings:login' %}" class="nav-link">Login</a>
-            </li>
-            {% endif %}
-            <!-- Add more links as needed -->
-          </ul>
+      <nav class="navbar navbar-expand-lg navbar-light bg-light bg-white border-bottom shadow-sm fixed-top p-3 px-md-4 mb-3">
+        <div class="container">
+          <a class="navbar-brand" href="{% url 'bookings:book_apartment' %}">YourBrand</a> <!-- Assuming you have a brand name -->
+          <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+              <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarNav">
+              <ul class="navbar-nav mr-auto">
+                  <!-- Positioned on the left -->
+                  <!-- <li class="nav-item active text-uppercase fs-4">
+                      <a class="nav-link" href="{% url 'bookings:home' %}">Home</a>
+                  </li> -->
+                  <li class="nav-item text-uppercase fs-4">
+                      <a class="nav-link" href="{% url 'bookings:book_apartment' %}">Book Now</a>
+                  </li>
+                  <li class="nav-item text-uppercase fs-4">
+                      <a class="nav-link" href="{% url 'bookings:contact' %}">Contact</a>
+                  </li>
+                  <li class="nav-item text-uppercase fs-4">
+                    <a class="nav-link" href="{% url 'bookings:display_pricings' %}">Pricing</a>
+                </li>
+              </ul>
+      
+              <ul class="navbar-nav">
+                  {% if user.is_authenticated %}
+                      <!-- User profile dropdown -->
+                      <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <i class="fa fa-user"></i> <!-- User icon using Font Awesome -->
+                        </a>
+                        <div class="dropdown-menu" aria-labelledby="userDropdown">
+                            <a class="dropdown-item text-uppercase fs-4" href="{% url 'bookings:profile' %}">Profile</a>
+                            <a class="dropdown-item text-uppercase fs-4" href="{% url 'bookings:display_bookings' %}">My Bookings</a>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item text-uppercase fs-4" href="{%url 'bookings:logout' %}">{{ user.first_name }} (Logout)</a>
+                        </div>
+                    </li>
+                  {% else %}
+                      <li class="nav-item">
+                          <a href="{% url 'bookings:register' %}" class="nav-link">Register</a>
+                      </li>
+                      <li class="nav-item">
+                          <a href="{% url 'bookings:login' %}" class="nav-link">Login</a>
+                      </li>
+                  {% endif %}
+              </ul>
+          </div>
         </div>
-      </nav>
+        
+    </nav>
+  
     {% endblock %}
         {% if messages %}
           <div class="container mt-3">

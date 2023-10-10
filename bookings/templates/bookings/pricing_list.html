@@ -1,0 +1,28 @@
+{% extends 'bookings/base.html' %}  
+{% block content %}
+
+    {% for apartment in apartments %}
+        <div class="container">
+            <h2>Monthly Pricings</h2>
+            <div class="table-responsive">
+                <table class="table table-sm table-bordered table-hover mt-2 mb-4 p-2">
+                    <thead class="thead-light">
+                        <tr>
+                            <th>Month</th>
+                            <th>Price per night</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for pricing in apartment.monthly_prices.all %}
+                            <tr>
+                                <td>{{ pricing.get_month_display }}</td>
+                                <td>€{{ pricing.price }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+    {% endfor %}
+{% endblock %}

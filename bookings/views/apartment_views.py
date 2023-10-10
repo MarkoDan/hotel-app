@@ -45,7 +45,8 @@ def book_apartment(request):
         if form.is_valid():
             check_in_date = form.cleaned_data['check_in_date']
             check_out_date = form.cleaned_data['check_out_date']
-            number_of_guests = form.cleaned_data['number_of_guests']
+            number_of_adults = form.cleaned_data['number_of_adults']
+            number_of_kids = form.cleaned_data['number_of_kids'] or 0
 
             if check_in_date < date.today():
                 messages.error(request, 'Check-in date cannot be in the past.')
@@ -66,7 +67,7 @@ def book_apartment(request):
 
             if overlapping_bookings.exists():
                 messages.error(request, 'The apartment is already booked for the specified date.')
-            elif apartment.maximum_number_of_guests < number_of_guests:
+            elif apartment.maximum_number_of_guests < (number_of_adults + number_of_kids):
                 messages.error(request, 'Exceeded maximum number of guests.')
             else:
                 request.session['temp_booking'] = {
@@ -74,8 +75,9 @@ def book_apartment(request):
                     'user_id': request.user.id,
                     'check_in_date': check_in_date.strftime('%Y-%m-%d'),
                     'check_out_date': check_out_date.strftime('%Y-%m-%d'),
-                    'number_of_guests': number_of_guests,
-                    'total_price': str(calculate_price(apartment, check_in_date, check_out_date, number_of_guests))
+                    'number_of_adults': number_of_adults,
+                    'number_of_kids': number_of_kids,
+                    'total_price': str(calculate_price(apartment, check_in_date, check_out_date))
                 }
                 return redirect('bookings:start_payment')
     else:
@@ -128,11 +130,16 @@ def display_bookings(request):
     bookings = Booking.objects.filter(user=request.user)
     return render(request, 'bookings/display_bookings.html', {'bookings': bookings})
 
+def display_pricings(request):
+    apartments = Apartment.objects.prefetch_related('monthly_prices').all()
+    return render(request, 'bookings/pricing_list.html', {'apartments': apartments})
+
 
 def apartment_detail(request, apartment_id):
     apartment = get_object_or_404(Apartment, id=apartment_id)
     context = {'apartment': apartment}
     return render(request, 'bookings/apartment_detail.html', context)
+
 
 
 def fetch_appartments(request, items_per_page=10):
@@ -164,12 +171,12 @@ def is_apartment_available(apartment, check_in, check_out):
 
 
 
-def calculate_price(apartment, check_in_date, check_out_date, number_of_guests):
+def calculate_price(apartment, check_in_date, check_out_date):
     
     monthly_price = apartment.monthly_prices.get(month=check_in_date.month)
 
     days = (check_out_date - check_in_date).days
-    return monthly_price.price * days * number_of_guests
+    return monthly_price.price * days
 
 
 
@@ -232,6 +239,21 @@ def send_custom_email(subject, message, to_email_list, from_email=None):
 
     # Send the email
     return send_mail(subject, message, from_email, to_email_list)
+
+def submit_message(request):
+    if request.method == "POST":
+        message_name = request.POST['message_name']
+        messag_email = request.POST['message_email']
+        message = request.POST['message']
+
+        #send an email
+        send_mail(
+            "message from " + message_name, # subject
+            message, # message 
+            messag_email, # from email
+            ['dankovicmarko18@gmail.com'], # To email
+        )
+
 
 def start_payment(request):
     stripe.api_key = settings.STRIPE_SECRET_KEY
@@ -315,7 +337,8 @@ def handle_checkout_session(session):
             user=User.objects.get(id=temp_booking['user_id']),
             check_in_date=datetime.strptime(temp_booking['check_in_date'], '%Y-%m-%d').date(),
             check_out_date=datetime.strptime(temp_booking['check_out_date'], '%Y-%m-%d').date(),
-            number_of_guests=temp_booking['number_of_guests'],
+            number_of_adults = temp_booking['number_of_adults'],
+            number_of_kids = temp_booking['number_of_kids'],
             total_price=temp_booking['total_price'],
             stripe_charge_id=session.payment_intent,
             idempotency_key=idempotency_key
@@ -328,7 +351,8 @@ def handle_checkout_session(session):
         user = User.objects.get(id=temp_booking['user_id'])
         check_in_date = datetime.strptime(temp_booking['check_in_date'], '%Y-%m-%d').date()
         check_out_date = datetime.strptime(temp_booking['check_out_date'], '%Y-%m-%d').date()
-        number_of_guests = temp_booking['number_of_guests']
+        number_of_adults = temp_booking['number_of_adults'],
+        number_of_kids = temp_booking['number_of_kids'],
         total_price = temp_booking['total_price']
         subject = 'Booking Confirmation'
         message = f"""
@@ -339,7 +363,7 @@ def handle_checkout_session(session):
         Details of your booking:
         - Check-in Date: {check_in_date.strftime('%B %d, %Y')}
         - Check-out Date: {check_out_date.strftime('%B %d, %Y')}
-        - Number of Guests: {number_of_guests}
+        - Number of Guests: {number_of_adults} adults, and {number_of_kids} kids.
         - Total Price: ${total_price}
 
         Thank you for choosing us. We are looking forward to hosting you!

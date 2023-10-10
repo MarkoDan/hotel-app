@@ -2,13 +2,13 @@
 
 {% block content %}
 
-<div class="container mt-5">
+<div class="container mt-5" style="padding-top: 80px;">
     {% for booking in bookings %}
     <div class="card mb-4">
         <div class="card-body">
             <p class="card-text">
                 User: {{ booking.user_full_name }} <br>
-                Number of Guests: {{ booking.number_of_guests }} <br>
+                Number of Guests: {{ booking.number_of_adults }} adults and {{ booking.number_of_kids}} kids <br>
                 Check-in Date: {{ booking.check_in_date }} <br>
                 Check-out Date: {{ booking.check_out_date }} <br>
                 Total Price: ${{ booking.total_price }} <br>

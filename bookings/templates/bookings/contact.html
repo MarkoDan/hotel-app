@@ -1,23 +1,73 @@
-
-
 {% extends "bookings/base.html" %}
 
 {% block content %}
 <div id="content-wrap">
-    <div class="container flex-container my-4 mt-5">
-        <h1>Contact Us</h1>
-    
-        <!-- Hotel Information -->
-        <h2>Hotel Information</h2>
-        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam non posuere nisl. Fusce venenatis convallis nunc, vel vestibulum urna.</p>
-        <p>Address: 123 Hotel Street, City, Country</p>
-        <p>Phone: +1234567890</p>
-        <p>Email: hotel@example.com</p>
+    <div class="container flex-container my-4 mt-5" style=" font-family: 'Roboto', sans-serif;">
+        <h1 class="mb-5">Contact Us</h1>
+        
+        <center>
+            <h2>Thanks {{message_name}}</h2>
+            <p>We received your email and will responde as soon as possible.</p>
+        </center>
+        <br/><br/><br/>
+
+
+        <div class="row mb-5">
+            <!-- Address -->
+            <div class="col-md-4">
+                <div class="card h-100 shadow-lg p-3 mb-5 bg-white rounded">
+                    <h4 class="card-title">Address:</h4>
+                    <p class="card-text">Eugena Tomica 22</p>
+                    <p class="card-text">23000 Zadar</p>
+                </div>
+            </div>
+            
+            <!-- Phone Numbers -->
+            <div class="col-md-4">
+                <div class="card h-100 shadow-lg p-3 mb-5 bg-white rounded">
+                    <h4 class="card-title">Phone:</h4>
+                    <p class="card-text"><a href="tel:+385916210853" class="text-decoration-none text-dark">+385916210853</a></p>
+                    <p class="card-text"><a href="tel:+385996575425" class="text-decoration-none text-dark">+385996575425</a></p>
+                </div>
+            </div>
+            
+            <!-- Email -->
+            <div class="col-md-4">
+                <div class="card h-100 shadow-lg p-3 mb-5 bg-white rounded">
+                    <h4 class="card-title">Email:</h4>
+                    <p class="card-text"><a href="mailto:e-mail.gverduk@gmail.com" class="text-decoration-none text-dark">e-mail.gverduk@gmail.com</a></p>
+                </div>
+            </div>
+        </div>
+
+        <div class="container my-5 shadow-lg p-3 mb-5 bg-white rounded">
+            <h2 class="text-center mb-4">Leave a Message</h2>
+            <form action="{% url 'bookings:submit_message' %}" method="post" id="messageForm">
+                <!-- CSRF token for Django -->
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="name">Your Name:</label>
+                    <input type="text" class="form-control" id="message_name" name="message_name" required>
+                </div>
+                <div class="form-group">
+                    <label for="email">Your Email:</label>
+                    <input type="email" class="form-control" id="message_email" name="message_email" required>
+                </div>
+        
+                <div class="form-group">
+                    <label for="message">Message:</label>
+                    <textarea class="form-control" id="message" name="message" rows="4" required></textarea>
+                </div>
+        
+                <button type="submit" class="btn btn-primary">Send Message</button>
+            </form>
+        </div>
+        
 
         <!-- Google Maps Embed -->
-        <h2>Find Us On Map</h2>
-        <div style="width: 100%; height: 400px;">
-            <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3155.9481776045327!2d15.237524412069266!3d44.1045236709636!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x4761faf538fc803f%3A0x13ae80c1b07add8a!2sUl.%20Josipa%20Eugena%20Tomi%C4%87a%2022%2C%2023000%2C%20Zadar%2C%20Croatia!5e1!3m2!1sen!2sdk!4v1696413937067!5m2!1sen!2sdk"loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+        <h2 class="mt-5 mb-4">Find Us On Map</h2>
+        <div class="shadow p-3 mb-5 bg-white rounded" style="width: 100%; height: 400px;">
+            <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2950.691570986325!2d15.237108615656568!3d44.106658079098084!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x4761faf538fc803f%3A0x13ae80c1b07add8a!2sEugena%20Tomi%C4%87a%2022%2C%2023000%2C%20Zadar%2C%20Croatia!5e0!3m2!1sen!2sus!4v1633533571567!5m2!1sen!2sus" loading="lazy" allowfullscreen="" aria-hidden="false" tabindex="0" style="border:0; width: 100%; height: 100%;"></iframe>
         </div>
     </div>
 </div>  {# end of content-wrap #}
