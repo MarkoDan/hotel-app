@@ -1,15 +1,10 @@
 {% extends "bookings/base.html" %}
 
 {% block content %}
-<div id="content-wrap">
+<div id="content-wrap" style="padding-top: 50px;">
     <div class="container flex-container my-4 mt-5" style=" font-family: 'Roboto', sans-serif;">
         <h1 class="mb-5">Contact Us</h1>
         
-        <center>
-            <h2>Thanks {{message_name}}</h2>
-            <p>We received your email and will responde as soon as possible.</p>
-        </center>
-        <br/><br/><br/>
 
 
         <div class="row mb-5">
@@ -42,7 +37,7 @@
 
         <div class="container my-5 shadow-lg p-3 mb-5 bg-white rounded">
             <h2 class="text-center mb-4">Leave a Message</h2>
-            <form action="{% url 'bookings:submit_message' %}" method="post" id="messageForm">
+            <form action="#" method="post" id="messageForm">
                 <!-- CSRF token for Django -->
                 {% csrf_token %}
                 <div class="form-group">
@@ -59,7 +54,7 @@
                     <textarea class="form-control" id="message" name="message" rows="4" required></textarea>
                 </div>
         
-                <button type="submit" class="btn btn-primary">Send Message</button>
+                <a  type="submit" class="btn dento-btn mx-2" data-animation="fadeInDown" data-delay="500ms">Book Now</a>
             </form>
         </div>
         

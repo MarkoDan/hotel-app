@@ -38,16 +38,13 @@
     {% block navbar %}
       <nav class="navbar navbar-expand-lg navbar-light bg-light bg-white border-bottom shadow-sm fixed-top p-3 px-md-4 mb-3">
         <div class="container">
-          <a class="navbar-brand" href="{% url 'bookings:book_apartment' %}">YourBrand</a> <!-- Assuming you have a brand name -->
+          <a class="navbar-brand" href="{% url 'bookings:home' %}">YourBrand</a>
           <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
               <span class="navbar-toggler-icon"></span>
           </button>
           <div class="collapse navbar-collapse" id="navbarNav">
               <ul class="navbar-nav mr-auto">
-                  <!-- Positioned on the left -->
-                  <!-- <li class="nav-item active text-uppercase fs-4">
-                      <a class="nav-link" href="{% url 'bookings:home' %}">Home</a>
-                  </li> -->
+
                   <li class="nav-item text-uppercase fs-4">
                       <a class="nav-link" href="{% url 'bookings:book_apartment' %}">Book Now</a>
                   </li>
@@ -56,15 +53,18 @@
                   </li>
                   <li class="nav-item text-uppercase fs-4">
                     <a class="nav-link" href="{% url 'bookings:display_pricings' %}">Pricing</a>
-                </li>
+                  </li>
+                  <li class="nav-item text-uppercase fs-4">
+                    <a class="nav-link" href="{% url 'bookings:book_apartment' %}">Test</a>
+                  </li>
               </ul>
       
               <ul class="navbar-nav">
                   {% if user.is_authenticated %}
-                      <!-- User profile dropdown -->
-                      <li class="nav-item dropdown">
+
+                    <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            <i class="fa fa-user"></i> <!-- User icon using Font Awesome -->
+                            <i class="fa fa-user"></i> 
                         </a>
                         <div class="dropdown-menu" aria-labelledby="userDropdown">
                             <a class="dropdown-item text-uppercase fs-4" href="{% url 'bookings:profile' %}">Profile</a>
@@ -86,6 +86,72 @@
         </div>
         
     </nav>
+
+
+    <!-- <div class="main-header-area">
+        <div class="classy-nav-container breakpoint-off">
+          <div class="container">
+  
+            <nav class="classy-navbar justify-content-between" id="dentoNav">
+  
+
+              <a class="nav-brand" href="{% url 'bookings:home' %}">Hotel</a>
+  
+
+              <div class="classy-navbar-toggler">
+                <span class="navbarToggler"><span></span><span></span><span></span></span>
+              </div>
+  
+
+              <div class="classy-menu">
+  
+
+                <div class="classycloseIcon">
+                  <div class="cross-wrap"><span class="top"></span><span class="bottom"></span></div>
+                </div>
+  
+
+                <div class="classynav">
+                  <ul id="nav">
+                    <li><a href="{% url 'bookings:home' %}">Home</a></li>
+                    <li><a href="{% url 'bookings:contact' %}">Contact</a></li>
+                    <li><a href="{% url 'bookings:book_apartment' %}">Book Now</a></li>
+                    <li><a href="{% url 'bookings:display_pricings' %}">Pricing</a></li>
+                    <li><a href="{% url 'bookings:contact' %}">Contact</a></li>
+                    {% if user.is_authenticated%}
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <i class="fa fa-user"></i>
+                            </a>
+                            <div class="dropdown-menu" aria-labelledby="userDropdown">
+                                <a class="dropdown-item text-uppercase fs-4" href="{% url 'bookings:profile' %}">Profile</a>
+                                <a class="dropdown-item text-uppercase fs-4" href="{% url 'bookings:display_bookings' %}">My Bookings</a>
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item text-uppercase fs-4" href="{%url 'bookings:logout' %}">{{ user.first_name }} (Logout)</a>
+                            </div>
+                        </li>
+                    {% else %}
+                        <li class="nav-item">
+                            <a href="{% url 'bookings:register' %}" class="nav-link">Register</a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{% url 'bookings:login' %}" class="nav-link">Login</a>
+                        </li>
+                    {% endif %}
+                  </ul>
+                </div>
+                
+
+              </div>
+  
+
+              <a href="#" class="btn dento-btn booking-btn">Booking Now</a>
+            </nav>
+          </div>
+        </div>
+      </div>
+    </header> -->
+
   
     {% endblock %}
         {% if messages %}
@@ -113,22 +179,71 @@
     <main class="flex-grow-1">
         {% block content %}
         <!-- This block will be replaced by the content of child templates -->
+       
         {% endblock %}
     </main>
   </div>
   
     
-  <footer>
+  <!-- ***** Footer Area Start ***** -->
+  <footer class="footer-area bg-img bg-gradient-overlay">
     <div class="container">
-        <div class="row justify-content-between align-items-center">
-            <div class="col-12 col-md-auto text-center text-md-left mb-2 mb-md-0">
-                © 2023 Your Hotel Name. All Rights Reserved.
+      <div class="row">
+        <!-- Single Footer Widget -->
+        <div class="col-12 col-sm-6 col-lg-4">
+          <div class="single-footer-widget">
+            <a href="{% url 'bookings:home' %}" class="d-block mb-4"></a>
+            <p>Etiam sutor risus, dapibus act elefend katen, lacinia sitamet denim. Mauris sagittis kansa interdum dignissim.</p>
+            <div class="footer-contact">
+              <p><i class="icon_pin"></i>Eugena Tomica 22, 23000 Zadar</p>
+              <p><i class="icon_phone"></i> +385916210853</p>
+              <p><i class="icon_phone"></i> +385996575425</p>
+              <p><i class="icon_mail"></i> e-mail.gverduk@gmail.com</p>
             </div>
-            <div class="col-12 col-md-auto text-center text-md-right">
-                <a href="{% url 'bookings:privacy_policy' %}" class="d-inline-block ml-2 ml-md-3">Privacy Policy</a>
-                <a href="{% url 'bookings:terms_and_conditions' %}" class="d-inline-block ml-2 ml-md-3">Terms & Conditions</a>
-            </div>
+          </div>
         </div>
+
+        <!-- Single Footer Widget -->
+        <div class="col-12 col-sm-6 col-lg">
+          <div class="single-footer-widget">
+   
+          </div>
+        </div>
+
+        <!-- Single Footer Widget -->
+        <div class="col-12 col-sm-6 col-lg">
+          <div class="single-footer-widget">
+            <!-- Widget Title -->
+            <h5 class="widget-title">Quick Link</h5>
+
+            <!-- Quick Links Nav -->
+            <nav>
+              <ul class="quick-links">
+                <li><a href="#">Privacy Policy</a></li>
+                <li><a href="#">Terms & Conditions</a></li>
+                <li><a href="{% url 'bookings:contact' %}">Contact</a></li>
+                <li><a href="#">Pricing</a></li>
+              </ul>
+            </nav>
+          </div>
+        </div>
+
+        <!-- Single Footer Widget -->
+       
+      </div>
+    </div>
+
+    <!-- Copywrite Area -->
+    <div class="container">
+      <div class="row">
+        <div class="col-12">
+          <div class="copywrite-content">
+            <p><!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
+                Copyright &copy;<script>document.write(new Date().getFullYear());</script> All rights reserved</a>
+                <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. --></p>
+          </div>
+        </div>
+      </div>
     </div>
   </footer>
 

@@ -38,7 +38,6 @@ class Booking(models.Model):
     total_price = models.DecimalField(max_digits=9, decimal_places=2, null=True, blank=True)
     stripe_charge_id = models.CharField(max_length=50, blank=True, null=True)
     idempotency_key = models.CharField(max_length=255, unique=True, null=True, blank=True)
-    
 
     STATUS_CHOISES = (
         ('confirmed', 'Confirmed'),

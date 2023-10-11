@@ -22,6 +22,7 @@ urlpatterns = [
     path('booking-success/', apartment_views.booking_success, name='booking_success'),
     path('booking-failed/', apartment_views.booking_failed, name='booking_failed'),
     path('pricings/', apartment_views.display_pricings, name='display_pricings'),
+    # path('test/' ,apartment_views.test_page, name='test_page'),
 
     #availability
 

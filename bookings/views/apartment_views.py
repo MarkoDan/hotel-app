@@ -67,7 +67,7 @@ def book_apartment(request):
 
             if overlapping_bookings.exists():
                 messages.error(request, 'The apartment is already booked for the specified date.')
-            elif apartment.maximum_number_of_guests < (number_of_adults + number_of_kids):
+            elif (apartment.maximum_number_of_adults + apartment.maximum_number_of_kids) < (number_of_adults + number_of_kids):
                 messages.error(request, 'Exceeded maximum number of guests.')
             else:
                 request.session['temp_booking'] = {
@@ -84,7 +84,7 @@ def book_apartment(request):
         form = BookingForm()
         
     context = {'form': form, 'apartment': apartment}
-    return render(request, 'bookings/apartment.html', context)
+    return render(request, 'bookings/test.html', context)
 
 
 
@@ -115,7 +115,7 @@ def check_availability(request):
         form = AvailabilityCheckForm()
 
     context = {'form': form, 'apartment': apartment}
-    return render(request, 'bookings/apartment.html', context)
+    return render(request, 'bookings/test.html', context)
 
         
 
@@ -140,6 +140,8 @@ def apartment_detail(request, apartment_id):
     context = {'apartment': apartment}
     return render(request, 'bookings/apartment_detail.html', context)
 
+def test_page(request):
+    return render(request, 'bookings/test.html')
 
 
 def fetch_appartments(request, items_per_page=10):
@@ -240,19 +242,19 @@ def send_custom_email(subject, message, to_email_list, from_email=None):
     # Send the email
     return send_mail(subject, message, from_email, to_email_list)
 
-def submit_message(request):
-    if request.method == "POST":
-        message_name = request.POST['message_name']
-        messag_email = request.POST['message_email']
-        message = request.POST['message']
+# def submit_message(request):
+#     if request.method == "POST":
+#         message_name = request.POST['message_name']
+#         messag_email = request.POST['message_email']
+#         message = request.POST['message']
 
-        #send an email
-        send_mail(
-            "message from " + message_name, # subject
-            message, # message 
-            messag_email, # from email
-            ['dankovicmarko18@gmail.com'], # To email
-        )
+#         #send an email
+#         send_mail(
+#             "message from " + message_name, # subject
+#             message, # message 
+#             messag_email, # from email
+#             ['dankovicmarko18@gmail.com'], # To email
+#         )
 
 
 def start_payment(request):
@@ -383,7 +385,7 @@ def cancel_booking(request, booking_id):
     booking = get_object_or_404(Booking, id=booking_id, user=request.user)
 
     days_since_booking = (date.today() - booking.booking_date).days
-    if days_since_booking <= 30:
+    if days_since_booking <= 15:
     
         if request.method == "POST" and booking.status == "confirmed":
 

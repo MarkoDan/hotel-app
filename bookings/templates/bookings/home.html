@@ -1,96 +1,30 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-    <title>Hotel App</title>
-    <style>
-        body {
-            font-family: 'Arial', sans-serif;
-            background-color: #ffeee7; /* A light peachy color for that summer vibe */
-        }
 
-        .hero-section {
-            background: linear-gradient(rgba(255, 222, 173, 0.7), rgba(255, 222, 173, 0.7)), url('https://via.placeholder.com/1600x900');
-            background-size: cover;
-            height: 80vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .hero-text {
-            text-align: center;
-            color: #333;
-        }
-
-        .flex-container {
-            background-color: #ffeee7;
-            padding: 2rem;
-        }
-
-        .feature-box {
-            background-color: #ffffff;
-            padding: 2rem;
-            margin: 1rem;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            border-radius: 15px;
-            transition: transform 0.3s ease;
-        }
-
-        .feature-box:hover {
-            transform: translateY(-10px);
-        }
-
-        h1, h2, h3 {
-            color: #fc5c65; /* Bright coral color for headings */
-        }
-
-        a {
-            color: #fc5c65;
-        }
-
-    </style>
-</head>
 <body>
 {% extends "bookings/base.html" %}
-
+{% load static %}
 {% block content %}
-<div id="content-wrap">
-
-    <!-- Hero Section -->
-    <div class="hero-section">
-        <div class="hero-text">
-            <h1>Welcome to Our Summer Hotel</h1>
-            <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Quos, ratione?</p>
-            <a href="#" class="btn btn-outline-dark">Explore Now</a>
+<section class="welcome-area">
+      <!-- Single Welcome Slide -->
+      <div class="welcome-welcome-slide bg-img bg-gradient-overlay jarallax" style="background-image: url({% static '/bookings/img/wallpaperflare.com_wallpaper.jpg' %});">
+        <div class="container h-100"> 
+          <div class="row h-100 align-items-center">
+            <div class="col-12">
+              <!-- Welcome Text -->
+              <div class="welcome-text text-center">
+                <h2 data-animation="fadeInDown" data-delay="100ms">We Believe Everyone Should Have Easy Access To Great Dental Care</h2>
+                <p data-animation="fadeInDown" data-delay="300ms">As a leading industry innovator, Dento is opening up exciting new opportunities for dental professionals, investors, employees & suppliers. Contact us to find out what we have to
+                  offer you.</p>
+                <div class="welcome-btn-group">
+                  <a href="{% url 'bookings:book_apartment' %}" class="btn dento-btn mx-2" data-animation="fadeInDown" data-delay="500ms">Book Now</a>
+                  <a href="{% url 'bookings:contact' %}" class="btn dento-btn mx-2 active" data-animation="fadeInDown" data-delay="700ms">Contact Us</a>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
+      </div>
     </div>
-
-    <div class="container flex-container my-4">
-
-        <!-- Feature Sections -->
-        <div class="row">
-            <div class="col-md-4">
-                <div class="feature-box">
-                    <h2>Modern Rooms</h2>
-                    <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Quos, ratione? Lorem ipsum dolor sit amet consectetur.</p>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="feature-box">
-                    <h2>Beach Front</h2>
-                    <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Quos, ratione? Lorem ipsum dolor sit amet consectetur.</p>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="feature-box">
-                    <h2>5-Star Dining</h2>
-                    <p>Lorem ipsum dolor sit, amet consectetur adipisicing elit. Quos, ratione? Lorem ipsum dolor sit amet consectetur.</p>
-                </div>
-            </div>
-        </div>
-    </div>  {# end of content-wrap #}
-</div>
+  </section>
 {% endblock %}
 </body>
 </html>

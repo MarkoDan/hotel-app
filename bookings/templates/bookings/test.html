@@ -1,219 +1,253 @@
-<!DOCTYPE html>
-<html>
-<head>
-<title>W3.CSS Template</title>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-<style>
-body,h1,h2,h3,h4,h5,h6 {font-family: "Raleway", Arial, Helvetica, sans-serif}
-.mySlides {display: none}
-</style>
-</head>
-<body class="w3-content w3-border-left w3-border-right">
+{% extends "bookings/base.html" %}
 
-<!-- Sidebar/menu -->
-<nav class="w3-sidebar w3-light-grey w3-collapse w3-top" style="z-index:3;width:260px" id="mySidebar">
-  <div class="w3-container w3-display-container w3-padding-16">
-    <i onclick="w3_close()" class="fa fa-remove w3-hide-large w3-button w3-transparent w3-display-topright"></i>
-    <h3>Rental</h3>
-    <h3>from $99</h3>
-    <h6>per night</h6>
-    <hr>
-    <form action="/action_page.php" target="_blank">
-      <p><label><i class="fa fa-calendar-check-o"></i> Check In</label></p>
-      <input class="w3-input w3-border" type="text" placeholder="DD MM YYYY" name="CheckIn" required>          
-      <p><label><i class="fa fa-calendar-o"></i> Check Out</label></p>
-      <input class="w3-input w3-border" type="text" placeholder="DD MM YYYY" name="CheckOut" required>         
-      <p><label><i class="fa fa-male"></i> Adults</label></p>
-      <input class="w3-input w3-border" type="number" value="1" name="Adults" min="1" max="6">              
-      <p><label><i class="fa fa-child"></i> Kids</label></p>
-      <input class="w3-input w3-border" type="number" value="0" name="Kids" min="0" max="6">
-      <p><button class="w3-button w3-block w3-green w3-left-align" type="submit"><i class="fa fa-search w3-margin-right"></i> Search availability</button></p>
-    </form>
-  </div>
-  <div class="w3-bar-block">
-    <a href="#apartment" class="w3-bar-item w3-button w3-padding-16"><i class="fa fa-building"></i> Apartment</a>
-    <a href="javascript:void(0)" class="w3-bar-item w3-button w3-padding-16" onclick="document.getElementById('subscribe').style.display='block'"><i class="fa fa-rss"></i> Subscribe</a>
-    <a href="#contact" class="w3-bar-item w3-button w3-padding-16"><i class="fa fa-envelope"></i> Contact</a>
-  </div>
-</nav>
+{% block content %}
+{% load widget_tweaks %}
 
-<!-- Top menu on small screens -->
-<header class="w3-bar w3-top w3-hide-large w3-black w3-xlarge">
-  <span class="w3-bar-item">Rental</span>
-  <a href="javascript:void(0)" class="w3-right w3-bar-item w3-button" onclick="w3_open()"><i class="fa fa-bars"></i></a>
-</header>
 
-<!-- Overlay effect when opening sidebar on small screens -->
-<div class="w3-overlay w3-hide-large" onclick="w3_close()" style="cursor:pointer" title="close side menu" id="myOverlay"></div>
+<section class="dento-about-us-area mt-70" style="padding-top: 50px;">
+  <div class="container">
+    <div class="row align-items-center">
+      <!-- About Us Thumbnail -->
+      <div class="col-12 col-md-6">
+        <div class="about-us-thumbnail mb-50">
+          <div id="apartmentImagesCarousel" class="carousel slide carousel-fade image-carousel" data-ride="carousel">
 
-<!-- !PAGE CONTENT! -->
-<div class="w3-main w3-white" style="margin-left:260px">
+                    
 
-  <!-- Push down content on small screens -->
-  <div class="w3-hide-large" style="margin-top:80px"></div>
-
-  <!-- Slideshow Header -->
-  <div class="w3-container" id="apartment">
-    <h2 class="w3-text-green">The Apartment</h2>
-    <div class="w3-display-container mySlides">
-    <img src="/w3images/livingroom.jpg" style="width:100%;margin-bottom:-6px">
-      <div class="w3-display-bottomleft w3-container w3-black">
-        <p>Living Room</p>
-      </div>
-    </div>
-    <div class="w3-display-container mySlides">
-    <img src="/w3images/diningroom.jpg" style="width:100%;margin-bottom:-6px">
-      <div class="w3-display-bottomleft w3-container w3-black">
-        <p>Dining Room</p>
-      </div>
-    </div>
-    <div class="w3-display-container mySlides">
-    <img src="/w3images/bedroom.jpg" style="width:100%;margin-bottom:-6px">
-      <div class="w3-display-bottomleft w3-container w3-black">
-        <p>Bedroom</p>
-      </div>
-    </div>
-    <div class="w3-display-container mySlides">
-    <img src="/w3images/livingroom2.jpg" style="width:100%;margin-bottom:-6px">
-      <div class="w3-display-bottomleft w3-container w3-black">
-        <p>Living Room II</p>
-      </div>
-    </div>
-  </div>
-  <div class="w3-row-padding w3-section">
-    <div class="w3-col s3">
-      <img class="demo w3-opacity w3-hover-opacity-off" src="/w3images/livingroom.jpg" style="width:100%;cursor:pointer" onclick="currentDiv(1)" title="Living room">
-    </div>
-    <div class="w3-col s3">
-      <img class="demo w3-opacity w3-hover-opacity-off" src="/w3images/diningroom.jpg" style="width:100%;cursor:pointer" onclick="currentDiv(2)" title="Dining room">
-    </div>
-    <div class="w3-col s3">
-      <img class="demo w3-opacity w3-hover-opacity-off" src="/w3images/bedroom.jpg" style="width:100%;cursor:pointer" onclick="currentDiv(3)" title="Bedroom">
-    </div>
-    <div class="w3-col s3">
-      <img class="demo w3-opacity w3-hover-opacity-off" src="/w3images/livingroom2.jpg" style="width:100%;cursor:pointer" onclick="currentDiv(4)" title="Second Living Room">
-    </div>
-  </div>
-
-  <div class="w3-container">
-    <h4><strong>The space</strong></h4>
-    <div class="w3-row w3-large">
-      <div class="w3-col s6">
-        <p><i class="fa fa-fw fa-male"></i> Max people: 4</p>
-        <p><i class="fa fa-fw fa-bath"></i> Bathrooms: 2</p>
-        <p><i class="fa fa-fw fa-bed"></i> Bedrooms: 1</p>
-      </div>
-      <div class="w3-col s6">
-        <p><i class="fa fa-fw fa-clock-o"></i> Check In: After 3PM</p>
-        <p><i class="fa fa-fw fa-clock-o"></i> Check Out: 12PM</p>
-      </div>
-    </div>
-    <hr>
+            <ol class="carousel-indicators">
+                {% for image in apartment.images.all %}
+                    <li data-target="#apartmentImagesCarousel" data-slide-to="{{ forloop.counter0 }}" class="{% if forloop.first %}active{% endif %}"></li>
+                {% endfor %}
+            </ol>
     
-    <h4><strong>Amenities</strong></h4>
-    <div class="w3-row w3-large">
-      <div class="w3-col s6">
-        <p><i class="fa fa-fw fa-shower"></i> Shower</p>
-        <p><i class="fa fa-fw fa-wifi"></i> WiFi</p>
-        <p><i class="fa fa-fw fa-tv"></i> TV</p>
+
+            <div class="carousel-inner">
+                {% for image in apartment.images.all %}
+                    <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                        <a href="#" data-toggle="modal" data-target="#imageModal{{ forloop.counter }}">
+                            <img src="{{ image.image.url }}" class="carousel-img img-fluid" alt="Apartment Image">
+
+                        </a>
+                    </div>
+                {% endfor %}
+
+            </div>
+
+
+            <a class="carousel-control-prev" href="#apartmentImagesCarousel" role="button" data-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="sr-only">Previous</span>
+            </a>
+
+
+            <a class="carousel-control-next" href="#apartmentImagesCarousel" role="button" data-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="sr-only">Next</span>
+            </a>
+        </div>
+        </div>
       </div>
-      <div class="w3-col s6">
-        <p><i class="fa fa-fw fa-cutlery"></i> Kitchen</p>
-        <p><i class="fa fa-fw fa-thermometer"></i> Heating</p>
-        <p><i class="fa fa-fw fa-wheelchair"></i> Accessible</p>
+      <!-- Booking and images section -->
+        
+      <div class="col-12 col-md-6">
+        <div class="about-us-content mb-50">
+          <!-- Section Heading -->
+          
+            
+            <!-- Display prices -->
+              
+            
+            <!-- Booking -->
+
+
+            <div class="container mt-5">
+              
+              <div class="section-heading">
+                <h2>Book Now</h2>
+                <div class="line"></div>
+              </div>
+
+              <h4><strong>Price By Month</strong></h4>
+              <label for="monthSelector">Select Month:</label>
+              <select id="monthSelector" class="form-control custom-width-input" style="width: 50%; max-width: 300px;">
+                  <!-- Option list... (no changes) -->
+                  {% for pricing in apartment.monthly_prices.all %}
+                      <option value="{{ pricing.price }}">{{ pricing.get_month_display }}</option>
+                  {% endfor %}
+              </select>
+              <h5 class="mt-3">Price: €<span id="priceDisplay"></span> per night</h5>
+              {% if user.is_authenticated %}
+            
+              
+              <h4><strong>Book</strong></h4>
+              <form method="post" action="{% url 'bookings:book_apartment' %}">
+                  {% csrf_token %}
+          
+                  <div class="row">
+                    <!-- Number of Adults -->
+                    <div class="col-md-6 form-group">
+                        <label for="{{ form.number_of_adults.id_for_label }}">Number of Adults</label>
+                        <input type="number" class="form-control" id="{{ form.number_of_adults.id_for_label }}" name="{{ form.number_of_adults.name }}" required min="1" max="4" value="{{ form.number_of_adults.value|default:'' }}">
+                    </div>
+                    
+                    <!-- Number of Kids -->
+                    <div class="col-md-6 form-group">
+                        <label for="{{ form.number_of_kids.id_for_label }}">Number of Kids</label>
+                        <input type="number" class="form-control" id="{{ form.number_of_kids.id_for_label }}" name="{{ form.number_of_kids.name }}" min="0" max="2" value="{{ form.number_of_kids.value|default:'' }}">
+
+                      </div>
+                </div>
+                
+                <!-- Check-In & Check-Out Dates -->
+                <div class="row">
+                    <!-- Check-In Date -->
+                    <div class="col-md-6 form-group">
+                        <label for="{{ form.check_in_date.id_for_label }}">Check-In</label>
+                        <input type="date" class="form-control" id="{{ form.check_in_date.id_for_label }}" name="{{ form.check_in_date.name }}" required value="{{ form.check_in_date.value|default:'' }}">
+
+                    </div>
+            
+                    <!-- Check-Out Date -->
+                    <div class="col-md-6 form-group">
+                        <label for="{{ form.check_out_date.id_for_label }}">Check-Out</label>
+                        <input type="date" class="form-control" id="{{ form.check_out_date.id_for_label }}" name="{{ form.check_out_date.name }}" required value="{{ form.check_out_date.value|default:'' }}">
+
+                    </div>
+                </div>
+            
+                <!-- Accept Terms Checkbox -->
+                <div class="form-group">
+                    <input type="checkbox" id="accept_terms" name="accept_terms" required>
+                    <label for="accept_terms">I accept the <a href="/terms-and-conditions/">terms and conditions</a>.</label>
+                </div>
+          
+                  <div>
+                      <button type="submit" class="btn dento-btn mx-2" data-animation="fadeInDown" data-delay="500ms">Book Now</button>
+                  </div>
+              </form>
+              {% else %}
+              <form method="post" action="{% url 'bookings:check_availability' %}" class="mt-5">
+                   {% csrf_token %}
+            
+                      <div class="row">
+                          <!-- Check-In Date field -->
+                          <div class="col-md-5 form-group">
+                              <label for="{{ form.check_in_date.id_for_label }}">Check-In</label>
+                              <input type="date" class="form-control" id="{{ form.check_in_date.id_for_label }}" name="{{ form.check_in_date.name }}" required value="{{ form.check_in_date.value|default:'' }}">
+                          </div>
+                  
+                          <!-- Check-Out Date field -->
+                          <div class="col-md-5 form-group">
+                              <label for="{{ form.check_out_date.id_for_label }}">Check-Out</label>
+                              <input type="date" class="form-control" id="{{ form.check_out_date.id_for_label }}" name="{{ form.check_out_date.name }}" required value="{{ form.check_out_date.value|default:'' }}">
+                          </div>
+                  
+                          <!-- Submit button -->
+                          <div class="">
+                              <button type="submit" class="btn dento-btn w-100" data-animation="fadeInDown" data-delay="500ms">Check</button>
+                          </div>
+                      </div>
+                      <!-- {% if form.non_field_errors %}
+                          <div class="alert alert-danger">
+                              {{ form.non_field_errors }}
+                          </div>
+                      {% endif %} -->
+
+                </form>
+
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="alert alert-{{ message.tags }}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+
+              {% endif %}
+          </div>
+                
+
+
+        </div>
+      </div>
+
+      <div class="col-12 mt-5 shadow-lg p-3 mb-5 bg-white rounded">
+        <h4><strong>The space</strong></h4>
+        <div class="row">
+            <div class="col-sm-6">
+              <!-- <p><i class="fa fa-fw fa-male"></i> Max people: {{ apartment.maximum_number_of_adults|default:0|add:apartment.maximum_number_of_kids|default:0 }}</p> -->
+                <p><i class="fa fa-fw fa-male"></i><i class="fa fa-female" aria-hidden="true"></i> Adults: {{ apartment.maximum_number_of_adults }}</p>
+                <p><i class="fa fa-fw fa-child"></i> Childs: {{ apartment.maximum_number_of_kids }}</p>
+                <p><i class="fa fa-fw fa-bath"></i>Number of Rooms: {{apartment.number_of_rooms}}</i></p>
+                <p><i class="fa fa-fw fa-bath"></i> Bathrooms: {{ apartment.number_of_bathrooms }}</p>
+                <p><i class="fa fa-fw fa-bed"></i> Bedrooms: {{ apartment.number_of_bedrooms }} ({{ apartment.size_of_bedrooms }} sqm)</p>
+            </div>
+            <div class="col-sm-6">
+                <p><i class="fa fa-fw fa-clock-o"></i> Check In: After {{ apartment.check_in|time:"h:i A" }}</p>
+                <p><i class="fa fa-fw fa-clock-o"></i> Check Out: Before {{ apartment.check_out|time:"h:i A" }}</p>
+            </div>
+
+        </div>
+        <h4><strong>Amenities</strong></h4>
+        <div class="row">
+                <div class="col-sm-6">
+                    {% if apartment.wifi %}
+                        <p><i class="fa fa-wifi"></i> WiFi</p>
+                    {% else %}
+                        <p>WiFi Not Available</p>
+                    {% endif %}
+                    {% if apartment.tv %}
+                    <p><i class="fa fa-tv"></i> TV</p>
+                    {% else %}
+                        <p>TV Not Available</p>
+                    {% endif %}
+                    {% if apartment.kitchen %}
+                    <p><i class="fa fa-cutlery"></i> Kitchen</p>
+                    {% else %}
+                        <p>Kitchen Not Available</p>
+                    {% endif %}
+                    
+                </div>
+                <div class="col-sm-6">
+                    {% if apartment.shower %}
+                    <p><i class="fa fa-shower"></i> Shower</p>
+                    {% else %}
+                        <p>Shower Not Available</p>
+                    {% endif %}
+                    {% if apartment.shower %}
+                        <p><i class="fa fa-fw fa-thermometer"></i> Heating</p>
+                    {% else %}
+                        <p>Heating Not Available</p>
+                    {% endif %}
+                </div>
+
+        </div>
+        <h4><strong>More Info</strong></h4>
+        <p>{{apartment.description}}</p>
+        <h4><strong>Contact Us</strong></h4>
+    
+            <p>Address: 123 Hotel Street, City, Country</p>
+            <p>Phone: +1234567890</p>
+            <p>Email: hotel@example.com</p>
+            <h4><strong>Find us on Map</strong></h4>
+            <div class="map-container">
+                <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3155.9481776045327!2d15.237524412069266!3d44.1045236709636!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x4761faf538fc803f%3A0x13ae80c1b07add8a!2sUl.%20Josipa%20Eugena%20Tomi%C4%87a%2022%2C%2023000%2C%20Zadar%2C%20Croatia!5e1!3m2!1sen!2sdk!4v1696413937067!5m2!1sen!2sdk" width="1000" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+            </div>
+        <hr>
       </div>
     </div>
-    <hr>
-    
-    <h4><strong>Extra Info</strong></h4>
-    <p>Our apartment is really clean and we like to keep it that way. Enjoy the lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
-    <p>We accept: <i class="fa fa-credit-card w3-large"></i> <i class="fa fa-cc-mastercard w3-large"></i> <i class="fa fa-cc-amex w3-large"></i> <i class="fa fa-cc-cc-visa w3-large"></i><i class="fa fa-cc-paypal w3-large"></i></p>
-    <hr>
-    
-    <h4><strong>Rules</strong></h4>
-    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
-    <p>Subscribe to receive updates on available dates and special offers.</p>
-    <p><button class="w3-button w3-green w3-third" onclick="document.getElementById('subscribe').style.display='block'">Subscribe</button></p>
   </div>
-  <hr>
-  
-  <!-- Contact -->
-  <div class="w3-container" id="contact">
-    <h2>Contact</h2>
-    <i class="fa fa-map-marker" style="width:30px"></i> Chicago, US<br>
-    <i class="fa fa-phone" style="width:30px"></i> Phone: +00 151515<br>
-    <i class="fa fa-envelope" style="width:30px"> </i> Email: mail@mail.com<br>
-    <p>Questions? Go ahead, ask them:</p>
-    <form action="/action_page.php" target="_blank">
-      <p><input class="w3-input w3-border" type="text" placeholder="Name" required name="Name"></p>
-      <p><input class="w3-input w3-border" type="text" placeholder="Email" required name="Email"></p>
-      <p><input class="w3-input w3-border" type="text" placeholder="Message" required name="Message"></p>
-    <button type="submit" class="w3-button w3-green w3-third">Send a Message</button>
-    </form>
-  </div>
-  
-  <footer class="w3-container w3-padding-16" style="margin-top:32px">Powered by <a href="https://www.w3schools.com/w3css/default.asp" title="W3.CSS" target="_blank" class="w3-hover-text-green">w3.css</a></footer>
-
-<!-- End page content -->
-</div>
-
-<!-- Subscribe Modal -->
-<div id="subscribe" class="w3-modal">
-  <div class="w3-modal-content w3-animate-zoom w3-padding-large">
-    <div class="w3-container w3-white w3-center">
-      <i onclick="document.getElementById('subscribe').style.display='none'" class="fa fa-remove w3-button w3-xlarge w3-right w3-transparent"></i>
-      <h2 class="w3-wide">SUBSCRIBE</h2>
-      <p>Join our mailing list to receive updates on available dates and special offers.</p>
-      <p><input class="w3-input w3-border" type="text" placeholder="Enter e-mail"></p>
-      <button type="button" class="w3-button w3-padding-large w3-green w3-margin-bottom" onclick="document.getElementById('subscribe').style.display='none'">Subscribe</button>
-    </div>
-  </div>
-</div>
+</section>
 
 <script>
-// Script to open and close sidebar when on tablets and phones
-function w3_open() {
-  document.getElementById("mySidebar").style.display = "block";
-  document.getElementById("myOverlay").style.display = "block";
-}
- 
-function w3_close() {
-  document.getElementById("mySidebar").style.display = "none";
-  document.getElementById("myOverlay").style.display = "none";
-}
-
-// Slideshow Apartment Images
-var slideIndex = 1;
-showDivs(slideIndex);
-
-function plusDivs(n) {
-  showDivs(slideIndex += n);
-}
-
-function currentDiv(n) {
-  showDivs(slideIndex = n);
-}
-
-function showDivs(n) {
-  var i;
-  var x = document.getElementsByClassName("mySlides");
-  var dots = document.getElementsByClassName("demo");
-  if (n > x.length) {slideIndex = 1}
-  if (n < 1) {slideIndex = x.length}
-  for (i = 0; i < x.length; i++) {
-    x[i].style.display = "none";
-  }
-  for (i = 0; i < dots.length; i++) {
-    dots[i].className = dots[i].className.replace(" w3-opacity-off", "");
-  }
-  x[slideIndex-1].style.display = "block";
-  dots[slideIndex-1].className += " w3-opacity-off";
-}
+  document.getElementById("monthSelector").addEventListener("change", function() {
+      console.log("Change event detected");
+      const selectedPrice = this.value;
+      console.log("Selected Price: ", selectedPrice);
+      document.getElementById("priceDisplay").innerHTML = selectedPrice;
+  });
+  //Initalize with the first month's price on page load
+  document.getElementById("priceDisplay").textContent = document.getElementById("monthSelector").value;
 </script>
 
-</body>
-</html>
+{% endblock %}
