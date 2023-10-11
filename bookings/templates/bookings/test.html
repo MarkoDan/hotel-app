@@ -3,9 +3,19 @@
 {% block content %}
 {% load widget_tweaks %}
 
-
 <section class="dento-about-us-area mt-70" style="padding-top: 50px;">
+
   <div class="container">
+    <div class="alert alert-{{ message.tags }}">
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+    </div>
+    
     <div class="row align-items-center">
       <!-- About Us Thumbnail -->
       <div class="col-12 col-md-6">
@@ -155,7 +165,7 @@
 
                 </form>
 
-                {% if messages %}
+                <!-- {% if messages %}
                     {% for message in messages %}
                         <div class="alert alert-{{ message.tags }}">
                             {{ message }}
@@ -163,7 +173,8 @@
                     {% endfor %}
                 {% endif %}
 
-              {% endif %}
+              {% endif %} -->
+
           </div>
                 
 

@@ -97,21 +97,31 @@ def check_availability(request):
         if form.is_valid():
             check_in_date = form.cleaned_data['check_in_date']
             check_out_date = form.cleaned_data['check_out_date']
-            print(check_in_date)
-            print(check_out_date)
 
-            #Check if the apartment is already booked
-            overlapping_bookings = Booking.objects.filter(
-                check_in_date__lt=check_out_date, check_out_date__gt=check_in_date
-            )
-
-            if overlapping_bookings.exists():
-                messages.error(request, 'The apartment is not available for the specified dates.')
+            if check_in_date < datetime.today().date():
+                messages.error(request, "Invalid check-in date.")
+                print('Invalid check in date')
+            elif check_out_date < datetime.today().date():
+                messages.error(request, "Invalid check-out date")
+                print('Invalid check out date')
             else:
-                messages.success(request, 'The apartment is available for the specified dates.')
+
+                #Check if the apartment is already booked
+                overlapping_bookings = Booking.objects.filter(
+                    check_in_date__lt=check_out_date, check_out_date__gt=check_in_date
+                )
+
+                if overlapping_bookings.exists():
+                    messages.error(request, 'The apartment is not available for the specified dates.')
+                    print('Unavailable')
+                else:
+                    messages.success(request, 'The apartment is available for the specified dates.')
+                    print('Available')
             
+            print('After data check')
             return redirect('bookings:check_availability')
     else:
+        print(form.errors)
         form = AvailabilityCheckForm()
 
     context = {'form': form, 'apartment': apartment}
