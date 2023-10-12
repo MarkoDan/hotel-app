@@ -1,295 +1,307 @@
-
 {% extends "bookings/base.html" %}
 
 {% block content %}
 {% load widget_tweaks %}
 
+<section class="dento-about-us-area mt-70" style="padding-top: 50px;">
 
-<style>
+  <div class="container" style="max-width: 1500px;">
+    {% if messages %}
+        {% for message in messages %}
+            {% if "no_swal" in message.tags %}
+                <div class="alert alert-{{ message.tags }} alert-warning fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+            {% endif %}
+        {% endfor %}
+    {% endif %}
 
-
-    .form-group label {
-        display: block;
-        margin-bottom: 5px;
-    }
-
-    .form-group {
-        margin-right: 0;
-        margin-bottom: 25px; 
-    }
-
-
-    @media (min-width: 480px) {
-        .form-inline .form-group {
-            display: inline-block;
-            vertical-align: top;
-        }
-    }
-
-
-</style>
-
-<div class="container mt-5" style="padding-top: 50px;">
-    <div class="row">
-        
-            <div class="col-lg-12">
-                <div id="apartmentImagesCarousel" class="carousel slide carousel-fade image-carousel" data-ride="carousel">
+    <div class="row align-items-center">
+      <!-- About Us Thumbnail -->
+      <div class="col-12 col-md-6">
+        <div class="about-us-thumbnail mb-50">
+            <div id="apartmentImagesCarousel" class="carousel slide carousel-fade image-carousel" data-ride="carousel">
 
                     
 
-                    <ol class="carousel-indicators">
-                        {% for image in apartment.images.all %}
-                            <li data-target="#apartmentImagesCarousel" data-slide-to="{{ forloop.counter0 }}" class="{% if forloop.first %}active{% endif %}"></li>
-                        {% endfor %}
-                    </ol>
-            
+                <ol class="carousel-indicators">
+                    {% for image in apartment.images.all %}
+                        <li data-target="#apartmentImagesCarousel" data-slide-to="{{ forloop.counter0 }}" class="{% if forloop.first %}active{% endif %}"></li>
+                    {% endfor %}
+                </ol>
+        
 
-                    <div class="carousel-inner">
-                        {% for image in apartment.images.all %}
-                            <div class="carousel-item {% if forloop.first %}active{% endif %}">
-                                <a href="#" data-toggle="modal" data-target="#imageModal{{ forloop.counter }}">
-                                    <img src="{{ image.image.url }}" class="carousel-img img-fluid" alt="Apartment Image">
+                <div class="carousel-inner">
+                    {% for image in apartment.images.all %}
+                        <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                            <a href="#" data-toggle="modal" data-target="#imageModal{{ forloop.counter }}">
+                                <img src="{{ image.image.url }}" class="carousel-img img-fluid" alt="Apartment Image">
 
-                                </a>
-                            </div>
-                        {% endfor %}
-
-                    </div>
-
-
-                    <a class="carousel-control-prev" href="#apartmentImagesCarousel" role="button" data-slide="prev">
-                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                    <span class="sr-only">Previous</span>
-                    </a>
-
-
-                    <a class="carousel-control-next" href="#apartmentImagesCarousel" role="button" data-slide="next">
-                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                        <span class="sr-only">Next</span>
-                    </a>
-                </div>
-
-                {% for image in apartment.images.all %}
-                    <div class="modal fade" id="imageModal{{ forloop.counter }}" tabindex="-1" role="dialog" aria-hidden="true">
-                        <div class="modal-dialog modal-xl"> <!-- modal-xl to make it as large as possible -->
-                            <div class="modal-content">
-                                <div class="modal-body p-0"> <!-- p-0 to remove padding -->
-                                    <img src="{{ image.image.url }}" class="img-fluid w-100" alt="Apartment Image"> <!-- w-100 to make image full width -->
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                </div>
-                            </div>
+                            </a>
                         </div>
-                    </div>
-                {% endfor %}
+                    {% endfor %}
 
-            </div> 
-            
-            
-                <!-- Price display -->
-                <div class="col-12 mt-5">
-                    <h4><strong>Price By Month</strong></h4>
-                    <label for="monthSelector">Select Month:</label>
-                    <select id="monthSelector" class="form-control" style="width: 50%; max-width: 300px;">
-                        <!-- Option list... (no changes) -->
-                        {% for pricing in apartment.monthly_prices.all %}
-                            <option value="{{ pricing.price }}">{{ pricing.get_month_display }}</option>
-                        {% endfor %}
-                    </select
-                    <h5 class="mt-3">Price: €<span id="priceDisplay"></span> per night</h5>
                 </div>
-                   
-    
-            <div class="col-12 mt-5">
-                    {% if user.is_authenticated %}
-                        <form method="post" action="{% url 'bookings:book_apartment' %}" class="form-inline">
-                            {% csrf_token %}
-                            <div class="form-group mr-3">
-                                <label for="{{ form.number_of_adults.id_for_label }}">Number of Adults</label>
-                                <input type="number" class="form-control w3-input w3-border" id="{{ form.number_of_adults.id_for_label }}" name="{{ form.number_of_adults.name }}" required min="1" max="4" value="{{ form.number_of_adults.value|default:'' }}">
-                            </div>
-                            
-                            <div class="form-group mr-3">
-                                <label for="{{ form.number_of_kids.id_for_label }}">Number of Kids</label>
-                                <input type="number" class="form-control w3-input w3-border" id="{{ form.number_of_kids.id_for_label }}" name="{{ form.number_of_kids.name }}" min="0" max="2" value="{{ form.number_of_kids.value|default:'' }}">
-                            </div>
-                            
-                            <div class="form-group mr-3">
-                                <label for="{{ form.check_in_date.id_for_label }}">Check-In</label>
-                                <input type="date" class="form-control w3-input w3-border" id="{{ form.check_in_date.id_for_label }}" name="{{ form.check_in_date.name }}" required value="{{ form.check_in_date.value|default:'' }}">
-                            </div>
-                
-                            <div class="form-group mr-3">
-                                <label for="{{ form.check_out_date.id_for_label }}">Check-Out</label>
-                                <input type="date" class="form-control w3-input w3-border" id="{{ form.check_out_date.id_for_label }}" name="{{ form.check_out_date.name }}" required value="{{ form.check_out_date.value|default:'' }}">
-                            </div>
-                
-                            <button type="submit" class="btn btn-primary">Book Now</button>
-                        </form>
-                {% else %}
-                    <form method="post" action="{% url 'bookings:check_availability' %}" class="form-inline mt-5">
+
+
+                <a class="carousel-control-prev" href="#apartmentImagesCarousel" role="button" data-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="sr-only">Previous</span>
+                </a>
+
+
+                <a class="carousel-control-next" href="#apartmentImagesCarousel" role="button" data-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="sr-only">Next</span>
+                </a>
+            </div>
+
+        </div>
+      </div>
+        
+      <div class="col-12 col-md-6">
+        <div class="about-us-content mb-50">
+          <!-- Section Heading -->
+
+            <div class="container mt-5">
+              
+              <div class="section-heading">
+                <h2>Book Now</h2>
+                <div class="line"></div>
+              </div>
+
+              <h4><strong>Price By Month</strong></h4>
+              <label for="monthSelector">Select Month:</label>
+              <select id="monthSelector" class="form-control custom-width-input" style="width: 50%; max-width: 300px;">
+                  <!-- Option list... (no changes) -->
+                  {% for pricing in apartment.monthly_prices.all %}
+                      <option value="{{ pricing.price }}">{{ pricing.get_month_display }}</option>
+                  {% endfor %}
+              </select>
+              <h5 class="mt-3">Price: €<span id="priceDisplay"></span> per night</h5>
+              {% if user.is_authenticated %}
+            
+              
+                    <h4><strong>Book</strong></h4>
+                    <form method="post" id="bookingId" action="{% url 'bookings:book_apartment' %}">
                         {% csrf_token %}
+                
+                        <div class="row">
+                            <!-- Number of Adults -->
+                            <div class="col-md-6 form-group">
+                                <label for="{{ form.number_of_adults.id_for_label }}">Number of Adults</label>
+                                <input type="number" class="form-control" id="{{ form.number_of_adults.id_for_label }}" name="{{ form.number_of_adults.name }}" required min="1" max="4" value="{{ form.number_of_adults.value|default:'' }}">
+                            </div>
+                            
+                            <!-- Number of Kids -->
+                            <div class="col-md-6 form-group">
+                                <label for="{{ form.number_of_kids.id_for_label }}">Number of Kids</label>
+                                <input type="number" class="form-control" id="{{ form.number_of_kids.id_for_label }}" name="{{ form.number_of_kids.name }}" min="0" max="2" value="{{ form.number_of_kids.value|default:'' }}">
+
+                            </div>
+                        </div>
                         
-                        <!-- Check-In Date field -->
-                        <div class="form-group mr-3">
-                            <label for="{{ form.check_in_date.id_for_label }}" class="mr-2">Check-In</label>
-                            <input type="date" class="form-control w3-input w3-border" id="{{ form.check_in_date.id_for_label }}" name="{{ form.check_in_date.name }}" required value="{{ form.check_in_date.value|default:'' }}">
+                        <!-- Check-In & Check-Out Dates -->
+                        <div class="row">
+                            <!-- Check-In Date -->
+                            <div class="col-md-6 form-group">
+                                <label for="{{ form.check_in_date.id_for_label }}">Check-In</label>
+                                <input type="date" class="form-control" id="{{ form.check_in_date.id_for_label }}" name="{{ form.check_in_date.name }}" required value="{{ form.check_in_date.value|default:'' }}">
+
+                            </div>
+                    
+                            <!-- Check-Out Date -->
+                            <div class="col-md-6 form-group">
+                                <label for="{{ form.check_out_date.id_for_label }}">Check-Out</label>
+                                <input type="date" class="form-control" id="{{ form.check_out_date.id_for_label }}" name="{{ form.check_out_date.name }}" required value="{{ form.check_out_date.value|default:'' }}">
+
+                            </div>
                         </div>
                     
-                        <!-- Check-Out Date field -->
-                        <div class="form-group mr-3">
-                            <label for="{{ form.check_out_date.id_for_label }}" class="mr-2">Check-Out</label>
-                            <input type="date" class="form-control w3-input w3-border" id="{{ form.check_out_date.id_for_label }}" name="{{ form.check_out_date.name }}" required value="{{ form.check_out_date.value|default:'' }}">
+                        <!-- Accept Terms Checkbox -->
+                        <div class="form-group">
+                            <input type="checkbox" id="accept_terms" name="accept_terms" required>
+                            <label for="accept_terms">I accept the <a href="/terms-and-conditions/">terms and conditions</a>.</label>
                         </div>
-                    
-                        <!-- Submit button -->
-                        <button type="submit" class="btn btn-primary">Check availability</button>
-                        {% if messages %}
-                            <ul class="messages">
-                                {% for message in messages %}
-                                    {{message}}
-                                {% endfor %}
-                            </ul>
-                        {% endif %}
+                
+                        <div>
+                            <button type="submit" class="btn dento-btn mx-2" data-animation="fadeInDown" data-delay="500ms">Book Now</button>
+                        </div>
                     </form>
+                    {% else %}
+                    <form method="post" action="{% url 'bookings:check_availability' %}" class="mt-5">
+                        {% csrf_token %}
                     
-                {% endif %}
-    
-            </div>
-         
-
-
-    
-          
-    
-
-        <div class="col-12 mt-5 shadow-lg p-3 mb-5 bg-white rounded">
-          <h4><strong>The space</strong></h4>
-          <div class="row">
-              <div class="col-sm-6">
-                <p><i class="fa fa-fw fa-male"></i> Max people: {{ apartment.maximum_number_of_adults|default:0|add:apartment.maximum_number_of_kids|default:0 }}</p>
-                  <p><i class="fa fa-fw fa-male"></i><i class="fa fa-female" aria-hidden="true"></i> Adults: {{ apartment.maximum_number_of_adults }}</p>
-                  <p><i class="fa fa-fw fa-child"></i> Childs: {{ apartment.maximum_number_of_kids }}</p>
-                  <p><i class="fa fa-fw fa-bath"></i>Number of Rooms: {{apartment.number_of_rooms}}</i></p>
-                  <p><i class="fa fa-fw fa-bath"></i> Bathrooms: {{ apartment.number_of_bathrooms }}</p>
-                  <p><i class="fa fa-fw fa-bed"></i> Bedrooms: {{ apartment.number_of_bedrooms }} ({{ apartment.size_of_bedrooms }} sqm)</p>
-              </div>
-              <div class="col-sm-6">
-                  <p><i class="fa fa-fw fa-clock-o"></i> Check In: After {{ apartment.check_in|time:"h:i A" }}</p>
-                  <p><i class="fa fa-fw fa-clock-o"></i> Check Out: Before {{ apartment.check_out|time:"h:i A" }}</p>
-              </div>
-          </div>
-          <hr>
-        </div>
-
-        <div class="col-12 mt-5 shadow-lg p-3 mb-5 bg-white rounded">
-            <h4><strong>Amenities</strong></h4>
-            <div class="row">
-                    <div class="col-sm-6">
-                        {% if apartment.wifi %}
-                            <p><i class="fa fa-wifi"></i> WiFi</p>
-                        {% else %}
-                            <p>WiFi Not Available</p>
-                        {% endif %}
-                        {% if apartment.tv %}
-                        <p><i class="fa fa-tv"></i> TV</p>
-                        {% else %}
-                            <p>TV Not Available</p>
-                        {% endif %}
-                        {% if apartment.kitchen %}
-                        <p><i class="fa fa-cutlery"></i> Kitchen</p>
-                        {% else %}
-                            <p>Kitchen Not Available</p>
-                        {% endif %}
+                            <div class="row">
+                                <!-- Check-In Date field -->
+                                <div class="col-md-5 form-group">
+                                    <label for="{{ form.check_in_date.id_for_label }}">Check-In</label>
+                                    <input type="date" class="form-control" id="{{ form.check_in_date.id_for_label }}" name="{{ form.check_in_date.name }}" required value="{{ form.check_in_date.value|default:'' }}">
+                                </div>
                         
-                    </div>
-                    <div class="col-sm-6">
-                        {% if apartment.shower %}
-                        <p><i class="fa fa-shower"></i> Shower</p>
-                        {% else %}
-                            <p>Shower Not Available</p>
-                        {% endif %}
-                        {% if apartment.shower %}
-                            <p><i class="fa fa-fw fa-thermometer"></i> Heating</p>
-                        {% else %}
-                            <p>Heating Not Available</p>
-                        {% endif %}
-                    </div>
+                                <!-- Check-Out Date field -->
+                                <div class="col-md-5 form-group">
+                                    <label for="{{ form.check_out_date.id_for_label }}">Check-Out</label>
+                                    <input type="date" class="form-control" id="{{ form.check_out_date.id_for_label }}" name="{{ form.check_out_date.name }}" required value="{{ form.check_out_date.value|default:'' }}">
 
-            </div>
-        
-        </div>
-        <div class="col-12 mt-5 shadow-lg p-3 mb-5 bg-white rounded">
-            <h4><strong>More Info</strong></h4>
-            <p>{{apartment.description}}</p>
-        </div>
+                                </div>
+                        
+                                <!-- Submit button -->
+                                <div class="col-md-5 form-group">
+                                    <button type="submit" class="btn dento-btn w-100" data-animation="fadeInDown" data-delay="500ms">Check availability</button>
+                                </div>
+                            </div>
 
-        <div class="col-12 mt-5 shadow-lg p-3 mb-5 bg-white rounded">
-            <h4><strong>Contact Us</strong></h4>
+
+                        </form>
     
-            <p>Address: 123 Hotel Street, City, Country</p>
-            <p>Phone: +1234567890</p>
-            <p>Email: hotel@example.com</p>
-        </div>
 
-        <div class="container mt-5 shadow-lg p-3 mb-5 bg-white rounded">
+                {% endif %}
+                {% if messages %}
+                    {% for message in messages %}
+                        {% if "no_swal" not in message.tags %}
+                            <script>
+                                Swal.fire({
+                                    title: '',
+                                    text: '{{ message }}',
+                                    icon: '{% if message.tags %}{{ message.tags }}{% else %}info{% endif %}', // This will use the tag as the icon. e.g., 'success', 'error'
+                                    confirmButtonText: 'Ok'
+                                })
+                            </script>
+                        {% endif %}
+                    {% endfor %}
+                {% endif %}
+
+          </div>
+                
+
+          <div class="loader" id="spinner" style="display: none;"></div>
+
+        </div>
+      </div>
+
+      <div class="col-12 mt-5 shadow-lg p-3 mb-5 bg-white rounded mx-auto">
+        <h4><strong>The space</strong></h4>
+        <div class="row">
+            <div class="col-sm-6">
+              <!-- <p><i class="fa fa-fw fa-male"></i> Max people: {{ apartment.maximum_number_of_adults|default:0|add:apartment.maximum_number_of_kids|default:0 }}</p> -->
+                <p><i class="fa fa-fw fa-male"></i><i class="fa fa-female" aria-hidden="true"></i> Adults: {{ apartment.maximum_number_of_adults }}</p>
+                <p><i class="fa fa-fw fa-child"></i> Childs: {{ apartment.maximum_number_of_kids }}</p>
+                <p><i class="fa fa-fw fa-bath"></i>Number of Rooms: {{apartment.number_of_rooms}}</i></p>
+                <p><i class="fa fa-fw fa-bath"></i> Bathrooms: {{ apartment.number_of_bathrooms }}</p>
+                <p><i class="fa fa-fw fa-bed"></i> Bedrooms: {{ apartment.number_of_bedrooms }} ({{ apartment.size_of_bedrooms }} sqm)</p>
+            </div>
+            <div class="col-sm-6">
+                <!-- <p><i class="fa fa-fw fa-clock-o"></i> Check In: After {{ apartment.check_in|time:"h:i A" }}</p>
+                <p><i class="fa fa-fw fa-clock-o"></i> Check Out: Before {{ apartment.check_out|time:"h:i A" }}</p> -->
+            </div>
+
+        </div>
+        <h4><strong>Amenities</strong></h4>
+        <div class="row">
+                <div class="col-sm-6">
+                    {% if apartment.wifi %}
+                        <p><i class="fa fa-wifi"></i> WiFi</p>
+                    {% else %}
+                        <p>WiFi Not Available</p>
+                    {% endif %}
+                    {% if apartment.tv %}
+                    <p><i class="fa fa-tv"></i> TV</p>
+                    {% else %}
+                        <p>TV Not Available</p>
+                    {% endif %}
+                    {% if apartment.kitchen %}
+                    <p><i class="fa fa-cutlery"></i> Kitchen</p>
+                    {% else %}
+                        <p>Kitchen Not Available</p>
+                    {% endif %}
+                    
+                </div>
+                <div class="col-sm-6">
+                    {% if apartment.shower %}
+                    <p><i class="fa fa-shower"></i> Shower</p>
+                    {% else %}
+                        <p>Shower Not Available</p>
+                    {% endif %}
+                    {% if apartment.shower %}
+                        <p><i class="fa fa-fw fa-thermometer"></i> Heating</p>
+                    {% else %}
+                        <p>Heating Not Available</p>
+                    {% endif %}
+                </div>
+
+        </div>
+        <h4><strong>More Info</strong></h4>
+        <p>{{apartment.description}}</p>
+        <h4><strong>Near Us</strong></h4>
+        <div>
+            <p><i class="fa fa-fw fa-shopping-cart"></i> Grocery Stores: ~300 meters away. Find daily essentials, fresh produce, and more.</p>
+            <p><i class="fa fa-fw fa-medkit"></i> Pharmacies: ~500 meters away. Prescription services, over-the-counter medicines, and health products available.</p>
+            <p><i class="fa fa-fw fa-coffee"></i> Cafes & Eateries: Range between 200-700 meters away. A variety of options ranging from local Croatian coffee shops to international cuisines.</p>
+            <p><i class="fa fa-fw fa-bus"></i> Public Transport: Bus stops within 400 meters. Easy connections to explore Zadar and nearby regions.</p>
+            <p><i class="fa fa-fw fa-shield"></i> Safety & Security: Local police station: ~900 meters away. Medical facilities: ~1.2 km away.</p>
+            <p><i class="fa fa-fw fa-landmark"></i> Local Attractions: Historic sites and cultural spots: ~1 km away or a short bus ride.</p>
+            <p><i class="fa-solid fa-tree"></i> Recreation: Local parks and waterfront: Approx. 800 meters away.</p>
+            <p><i class="fa-solid fa-umbrella-beach"></i> Beach: 600 meters away, perfect for a quick dip or a long relaxing day by the sea.</p>
+        </div>
+        <h4><strong>Contact Us</strong></h4>
+            <div style="margin-bottom: 50px; margin-top: 30px;">
+                <p>Address: Eugena Tomića 22, 23000, Zadar, Croatia</p>
+                <p>Phone: +1234567890</p>
+                <p>Phone: +385996575425</p>
+                <p>Email: e-mail.gverduk@gmail.com</p>
+            </div>
+
             <h4><strong>Find us on Map</strong></h4>
             <div class="map-container">
-                <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3155.9481776045327!2d15.237524412069266!3d44.1045236709636!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x4761faf538fc803f%3A0x13ae80c1b07add8a!2sUl.%20Josipa%20Eugena%20Tomi%C4%87a%2022%2C%2023000%2C%20Zadar%2C%20Croatia!5e1!3m2!1sen!2sdk!4v1696413937067!5m2!1sen!2sdk" width="1000" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+                <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3155.9481776045327!2d15.237524412069266!3d44.1045236709636!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x4761faf538fc803f%3A0x13ae80c1b07add8a!2sUl.%20Josipa%20Eugena%20Tomi%C4%87a%2022%2C%2023000%2C%20Zadar%2C%20Croatia!5e1!3m2!1sen!2sdk!4v1696413937067!5m2!1sen!2sdk" width="1000" height="150" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
             </div>
-        </div>
-
-
+        <hr>
+      </div>
     </div>
-    {% for image in apartment.images.all %}
-        <div class="modal fade" id="imageModal{{ forloop.counter }}" tabindex="-1" role="dialog" aria-labelledby="imageModalLabel{{ forloop.counter }}" aria-hidden="true">
-            <div class="modal-dialog modal-xl" role="document">
-                <div class="modal-content">
-                    <div class="modal-body">
-                        <img src="{{ image.image.url }}" class="img-fluid" alt="Apartment Image">
-                    </div>
-                </div>
+  </div>
+</section>
+
+{% for image in apartment.images.all %}
+<div class="modal fade" id="imageModal{{ forloop.counter }}" tabindex="-1" role="dialog" aria-labelledby="imageModalLabel{{ forloop.counter }}" aria-hidden="true">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-body">
+                <img src="{{ image.image.url }}" class="img-fluid" alt="Apartment Image">
             </div>
         </div>
-    {% endfor %}
-                
+    </div>
 </div>
-
-
+{% endfor %}
 
 
 <script>
+  document.getElementById("monthSelector").addEventListener("change", function() {
+      console.log("Change event detected");
+      const selectedPrice = this.value;
+      console.log("Selected Price: ", selectedPrice);
+      document.getElementById("priceDisplay").innerHTML = selectedPrice;
+  });
+  //Initalize with the first month's price on page load
+  document.getElementById("priceDisplay").textContent = document.getElementById("monthSelector").value;
+
+
+  document.getElementById('bookingId').addEventListener('submit', function(){
     
-    // Activate datepickers for the input fields
-    $(document).ready(function () {
-        $('.datepicker').datepicker();
-    });
+    //Show the spiner
+    document.getElementById('spinner').style.display = 'block';
 
-    console.log('Script is running')
-    document.getElementById("monthSelector").addEventListener("change", function() {
-        console.log("Change event detected");
-        const selectedPrice = this.value;
-        console.log("Selected Price: ", selectedPrice);
-        document.getElementById("priceDisplay").innerHTML = selectedPrice;
-    });
+    //
+    var btn = document.querySelector('button[type="submit"]');
+    btn.disabled = true;
+    btn.innerHTML = 'Processing...';
+
+  });
 
 
-    //Initalize with the first month's price on page load
-    document.getElementById("priceDisplay").textContent  =document.getElementById("monthSelector").value;
-
-    //images
-    function currentDiv(index) {
-        var slides = document.getElementsByClassName("mySlides");
-        for (var i = 0; i < slides.length; i++) {
-            slides[i].style.display = "none";
-        }
-        slides[index-1].style.display = "block";
-    }
-    
-
-
-</script>
 
 
 </script>

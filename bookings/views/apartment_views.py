@@ -2,12 +2,11 @@ import uuid
 from django.shortcuts import get_object_or_404, render, redirect
 from bookings.forms import BookingForm, AvailabilityCheckForm
 from ..models import Apartment, Booking, User
-from django.core.paginator import Paginator
 from datetime import date, timedelta, datetime
 from django.db.models import Q
 from django.contrib import messages
 from django.db import transaction
-from django.http import JsonResponse, HttpResponse
+from django.http import JsonResponse
 import stripe
 from django.conf import settings
 from django.urls import reverse
@@ -76,7 +75,7 @@ def book_apartment(request):
         form = BookingForm()
         
     context = {'form': form, 'apartment': apartment}
-    return render(request, 'bookings/test.html', context)
+    return render(request, 'bookings/apartment.html', context)
 
 
 
@@ -214,19 +213,6 @@ def send_custom_email(subject, message, to_email_list, from_email=None):
     # Send the email
     return send_mail(subject, message, from_email, to_email_list)
 
-# def submit_message(request):
-#     if request.method == "POST":
-#         message_name = request.POST['message_name']
-#         messag_email = request.POST['message_email']
-#         message = request.POST['message']
-
-#         #send an email
-#         send_mail(
-#             "message from " + message_name, # subject
-#             message, # message 
-#             messag_email, # from email
-#             ['dankovicmarko18@gmail.com'], # To email
-#         )
 
 def contact(request):
     if request.method == "POST":
