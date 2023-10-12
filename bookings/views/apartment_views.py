@@ -25,21 +25,20 @@ logger = logging.getLogger(__name__)
 
 
 
-def apartments_view(request):
-    if request.method == "GET":
-        context = fetch_appartments(request)
+# def apartments_view(request):
+#     if request.method == "GET":
+#         context = fetch_appartments(request)
         
-        return render(request, 'bookings/available_apartments.html', context)
+#         return render(request, 'bookings/available_apartments.html', context)
     
 
     
 def book_apartment(request):
     apartment = get_object_or_404(Apartment)
     
-
     #Check user authentication
     if not request.user.is_authenticated:
-        messages.info(request, 'Please log in to make a booking. Showing availability only.')
+        messages.info(request, 'Please login to make a booking. Showing availability only.', extra_tags='no_swal')
     if request.method == "POST":
         form = BookingForm(request.POST)
         if form.is_valid():
@@ -48,15 +47,6 @@ def book_apartment(request):
             number_of_adults = form.cleaned_data['number_of_adults']
             number_of_kids = form.cleaned_data['number_of_kids'] or 0
 
-            if check_in_date < date.today():
-                messages.error(request, 'Check-in date cannot be in the past.')
-                context = {'form':form, 'apartment': apartment}
-                return render(request, 'bookings/apartment.html', context)
-            
-            if check_out_date <= check_in_date:
-                messages.error(request, 'Check-out date must be after check-in date.')
-                context = {'form':form, 'apartment': apartment}
-                return render(request, 'bookings/apartment.html', context)
             
             # check if the apartment is already booked
             overlapping_bookings = Booking.objects.filter(
@@ -67,8 +57,6 @@ def book_apartment(request):
 
             if overlapping_bookings.exists():
                 messages.error(request, 'The apartment is already booked for the specified date.')
-            elif (apartment.maximum_number_of_adults + apartment.maximum_number_of_kids) < (number_of_adults + number_of_kids):
-                messages.error(request, 'Exceeded maximum number of guests.')
             else:
                 request.session['temp_booking'] = {
                     'apartment_id':apartment.id,
@@ -80,6 +68,10 @@ def book_apartment(request):
                     'total_price': str(calculate_price(apartment, check_in_date, check_out_date))
                 }
                 return redirect('bookings:start_payment')
+        else:
+            for field, errors in form.errors.items():
+                for error in errors:
+                    messages.error(request, error)
     else:
         form = BookingForm()
         
@@ -98,31 +90,26 @@ def check_availability(request):
             check_in_date = form.cleaned_data['check_in_date']
             check_out_date = form.cleaned_data['check_out_date']
 
-            if check_in_date < datetime.today().date():
-                messages.error(request, "Invalid check-in date.")
-                print('Invalid check in date')
-            elif check_out_date < datetime.today().date():
-                messages.error(request, "Invalid check-out date")
-                print('Invalid check out date')
+            overlapping_bookings = Booking.objects.filter(
+                check_in_date__lt=check_out_date, check_out_date__gt=check_in_date
+            )
+
+            if overlapping_bookings.exists():
+                messages.error(request, 'The apartment is not available for the specified dates.')
+
             else:
+                messages.success(request, 'The apartment is available for the specified dates, you can book the apartment by signing up.')
 
-                #Check if the apartment is already booked
-                overlapping_bookings = Booking.objects.filter(
-                    check_in_date__lt=check_out_date, check_out_date__gt=check_in_date
-                )
-
-                if overlapping_bookings.exists():
-                    messages.error(request, 'The apartment is not available for the specified dates.')
-                    print('Unavailable')
-                else:
-                    messages.success(request, 'The apartment is available for the specified dates.')
-                    print('Available')
-            
-            print('After data check')
             return redirect('bookings:check_availability')
+        
+        else:
+
+            for field, errors in form.errors.items():
+                for error in errors:
+                    messages.error(request, error)
     else:
-        print(form.errors)
         form = AvailabilityCheckForm()
+
 
     context = {'form': form, 'apartment': apartment}
     return render(request, 'bookings/test.html', context)
@@ -145,41 +132,29 @@ def display_pricings(request):
     return render(request, 'bookings/pricing_list.html', {'apartments': apartments})
 
 
-def apartment_detail(request, apartment_id):
-    apartment = get_object_or_404(Apartment, id=apartment_id)
-    context = {'apartment': apartment}
-    return render(request, 'bookings/apartment_detail.html', context)
-
-def test_page(request):
-    return render(request, 'bookings/test.html')
+# def apartment_detail(request, apartment_id):
+#     apartment = get_object_or_404(Apartment, id=apartment_id)
+#     context = {'apartment': apartment}
+#     return render(request, 'bookings/apartment_detail.html', context)
 
 
-def fetch_appartments(request, items_per_page=10):
-    context = {}
+
+# def fetch_appartments(request, items_per_page=10):
+#     context = {}
     
-    sort_order = request.GET.get('sort', 'asc') # Default to ascending
+#     sort_order = request.GET.get('sort', 'asc') # Default to ascending
     
-    if sort_order == 'asc':
-        apartments_list = Apartment.objects.all().order_by('price_per_night')
-    else:
-        apartments_list = Apartment.objects.all().order_by('-price_per_night')
+#     if sort_order == 'asc':
+#         apartments_list = Apartment.objects.all().order_by('price_per_night')
+#     else:
+#         apartments_list = Apartment.objects.all().order_by('-price_per_night')
     
-    paginator = Paginator(apartments_list, items_per_page)
-    page = request.GET.get('page')
-    apartments = paginator.get_page(page)
+#     paginator = Paginator(apartments_list, items_per_page)
+#     page = request.GET.get('page')
+#     apartments = paginator.get_page(page)
     
-    context['apartments'] = apartments
-    return context
-
-
-def is_apartment_available(apartment, check_in, check_out):
-    overlapping_bookings = Booking.objects.filter(apartment=apartment).filter(
-        (Q(check_in_date__lt=check_in) & Q(check_out_date__gt=check_in)) |
-        (Q(check_in_date__lt=check_out) & Q(check_out_date__gt=check_out)) |
-        (Q(check_in_date=check_out)) |
-        (Q(check_out_date=check_in))
-    )
-    return overlapping_bookings.count() == 0
+#     context['apartments'] = apartments
+#     return context
 
 
 
@@ -214,19 +189,6 @@ def apartment_availability(request):
         'booked_dates': booked_dates,
         'available_dates': available_dates,
     })
-
-
-def availability_result(request, available):
-    context = {'available': available}
-    return render(request, 'bookings/availability_result.html', context)
-
-    
-
-def is_apartment_available_for_dates(apartment, check_in, check_out):
-    # Logic from the single_apartment function
-    return is_apartment_available(apartment, check_in, check_out)
-
-
 
 
 
@@ -265,6 +227,26 @@ def send_custom_email(subject, message, to_email_list, from_email=None):
 #             messag_email, # from email
 #             ['dankovicmarko18@gmail.com'], # To email
 #         )
+
+def contact(request):
+    if request.method == "POST":
+        message_name = request.POST['message_name']
+        message_email = request.POST['message_email']
+        message = request.POST['message']
+        subject = "Message from {}: {}".format(message_name, message_email)
+        #send an email
+        send_mail(
+            subject,
+            message,
+            'dankovicmarko18@gmail.com',  # Ensure this is the corrected variable name
+            ['dankovicmarko18@gmail.com'],
+        )
+
+        
+        messages.success(request, "Thank you for contacting us {message_name}! We'll get back to you shortly.")
+
+
+    return render(request, 'bookings/contact.html')
 
 
 def start_payment(request):

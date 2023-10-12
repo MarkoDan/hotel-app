@@ -68,6 +68,22 @@
                         <span class="sr-only">Next</span>
                     </a>
                 </div>
+
+                {% for image in apartment.images.all %}
+                    <div class="modal fade" id="imageModal{{ forloop.counter }}" tabindex="-1" role="dialog" aria-hidden="true">
+                        <div class="modal-dialog modal-xl"> <!-- modal-xl to make it as large as possible -->
+                            <div class="modal-content">
+                                <div class="modal-body p-0"> <!-- p-0 to remove padding -->
+                                    <img src="{{ image.image.url }}" class="img-fluid w-100" alt="Apartment Image"> <!-- w-100 to make image full width -->
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+
             </div> 
             
             
@@ -226,21 +242,21 @@
 
 
     </div>
-
-        
-</div>
-
-{% for image in apartment.images.all %}
-<div class="modal fade" id="imageModal{{ forloop.counter }}" tabindex="-1" role="dialog" aria-labelledby="imageModalLabel{{ forloop.counter }}" aria-hidden="true">
-    <div class="modal-dialog modal-xl" role="document">
-        <div class="modal-content">
-            <div class="modal-body">
-                <img src="{{ image.image.url }}" class="img-fluid" alt="Apartment Image">
+    {% for image in apartment.images.all %}
+        <div class="modal fade" id="imageModal{{ forloop.counter }}" tabindex="-1" role="dialog" aria-labelledby="imageModalLabel{{ forloop.counter }}" aria-hidden="true">
+            <div class="modal-dialog modal-xl" role="document">
+                <div class="modal-content">
+                    <div class="modal-body">
+                        <img src="{{ image.image.url }}" class="img-fluid" alt="Apartment Image">
+                    </div>
+                </div>
             </div>
         </div>
-    </div>
+    {% endfor %}
+                
 </div>
-{% endfor %}
+
+
 
 
 <script>
@@ -270,8 +286,7 @@
         }
         slides[index-1].style.display = "block";
     }
-
-    //images
+    
 
 
 </script>

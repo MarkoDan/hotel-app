@@ -10,7 +10,7 @@
         <div class="row mb-5">
             <!-- Address -->
             <div class="col-md-4">
-                <div class="card h-100 shadow-lg p-3 mb-5 bg-white rounded">
+                <div class="card shadow-lg p-3 mb-5 bg-white rounded" style="min-height: 200px;">
                     <h4 class="card-title">Address:</h4>
                     <p class="card-text">Eugena Tomica 22</p>
                     <p class="card-text">23000 Zadar</p>
@@ -19,7 +19,7 @@
             
             <!-- Phone Numbers -->
             <div class="col-md-4">
-                <div class="card h-100 shadow-lg p-3 mb-5 bg-white rounded">
+                <div class="card shadow-lg p-3 mb-5 bg-white rounded" style="min-height: 200px;">
                     <h4 class="card-title">Phone:</h4>
                     <p class="card-text"><a href="tel:+385916210853" class="text-decoration-none text-dark">+385916210853</a></p>
                     <p class="card-text"><a href="tel:+385996575425" class="text-decoration-none text-dark">+385996575425</a></p>
@@ -28,7 +28,7 @@
             
             <!-- Email -->
             <div class="col-md-4">
-                <div class="card h-100 shadow-lg p-3 mb-5 bg-white rounded">
+                <div class="card shadow-lg p-3 mb-5 bg-white rounded" style="min-height: 200px;">
                     <h4 class="card-title">Email:</h4>
                     <p class="card-text"><a href="mailto:e-mail.gverduk@gmail.com" class="text-decoration-none text-dark">e-mail.gverduk@gmail.com</a></p>
                 </div>
@@ -37,7 +37,7 @@
 
         <div class="container my-5 shadow-lg p-3 mb-5 bg-white rounded">
             <h2 class="text-center mb-4">Leave a Message</h2>
-            <form action="#" method="post" id="messageForm">
+            <form action="{% url 'bookings:contact' %}" method="post" id="messageForm">
                 <!-- CSRF token for Django -->
                 {% csrf_token %}
                 <div class="form-group">
@@ -54,8 +54,22 @@
                     <textarea class="form-control" id="message" name="message" rows="4" required></textarea>
                 </div>
         
-                <a  type="submit" class="btn dento-btn mx-2" data-animation="fadeInDown" data-delay="500ms">Book Now</a>
+                <button type="submit" class="btn dento-btn mx-2" data-animation="fadeInDown" data-delay="500ms">Send</button>
             </form>
+            {% if messages %}
+                {% for message in messages %}
+
+                    <script>
+                        Swal.fire({
+                            title: '',
+                            text: '{{ message }}',
+                            icon: 'success',
+                            confirmButtonText: 'Ok'
+                        })
+                    </script>
+
+                {% endfor %}
+            {% endif %}
         </div>
         
 

@@ -85,8 +85,6 @@ def delete_account(request):
     return render(request, 'bookings/confirm_delete.html')
 
 
-def contact(request):
-    return render(request, 'bookings/contact.html')
 
 #Views for rendering the Privacy and Policy page, and Terms & Conditions pages
 def privacy_policy(request):

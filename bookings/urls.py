@@ -12,9 +12,9 @@ urlpatterns = [
     path('register/', auth_views.register, name='register'),
     path('login/', LoginView.as_view(template_name='bookings/login.html'), name='login'),
     path('logout/', auth_views.logout_request, name='logout'),
-    path('apartments/', apartment_views.apartments_view, name='apartments'),
-    path('apartments/<int:apartment_id>/', apartment_views.apartment_detail, name='apartment_detail'),
-    path('contact/', auth_views.contact, name='contact'),
+    # path('apartments/', apartment_views.apartments_view, name='apartments'),
+    # path('apartments/<int:apartment_id>/', apartment_views.apartment_detail, name='apartment_detail'),
+    path('contact/', apartment_views.contact, name='contact'),
     path('privacy-policy/', auth_views.privacy_policy, name='privacy_policy'),
     path('terms-and-conditions/', auth_views.terms_and_conditions, name='terms_and_conditions'),
     
@@ -27,7 +27,7 @@ urlpatterns = [
     #availability
 
     path('check_availability/', apartment_views.check_availability, name='check_availability'),
-    path('availability_result/<str:available>/', apartment_views.availability_result, name='availability_result'),
+    # path('availability_result/<str:available>/', apartment_views.availability_result, name='availability_result'),
 
     #Profile urls
     path('profile/', auth_views.profile_view, name='profile'),

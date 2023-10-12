@@ -14,8 +14,20 @@ body,h1,h2,h3,h4,h5,h6 {font-size: 50px;}
 body {
   display: flex;
   flex-direction: column;
+  min-height: 100vh;
+  padding-bottom: 200px;
 
 }
+
+main{
+  flex: 1;
+}
+
+.content-wrapper {
+  padding-bottom: 100px;  /* Adjust as necessary */
+}
+
+
 
 #content-wrap {
   flex: 1; /* This makes it take up all available space, pushing the footer down */
@@ -26,7 +38,7 @@ footer {
   height: auto;
   background-color: #333;
   color: #fff;
-  padding: 20px;
+  padding:20px;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -116,6 +128,8 @@ position: relative;
   z-index: 2; /* Position it above the pseudo-element */
 }
 
+
+
 body {
   font-family: 'Poppins', sans-serif;
   color: black;
@@ -195,6 +209,29 @@ ul.messages li.success {
 ul.messages li.error {
   background-color: #FFD2D2;
   color: #D8000C;
+}
+
+
+.loader {
+  border: 16px solid #f3f3f3;
+  border-radius: 50%;
+  border-top: 16px solid #3498db;
+  width: 80px;
+  height: 80px;
+  animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.loader {
+  /* other styles */
+  position: fixed;  /* or 'absolute' depending on your needs */
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }
 
 
