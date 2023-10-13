@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 
 import os
 from pathlib import Path
+import dj_database_url
 from django.contrib.messages import constants as messages
 from decouple import config
 from pathlib import Path
@@ -27,9 +28,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = config('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = config('DEBUG', default=True, cast=bool)
+DEBUG = config('DEBUG', cast=bool)
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['localhost','127.0.0.1', 'saricstay.com']
 
 
 # Application definition
@@ -84,36 +85,13 @@ WSGI_APPLICATION = 'hotelapp.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': config('DB_ENGINE',default='django.db.backends.sqlite3'),
-#         'NAME': BASE_DIR / config('DB_NAME', default='db.sqlite3'),
-#     }
-# }
-
-# PostgreSQL database settings
-# DATABASES = {
-#     'default': {
-#         'ENGINE': config('DB_ENGINE', default='django.db.backends.postgresql'),
-#         'NAME': config('DB_NAME', default='apartment'),
-#         'USER': config('DB_USER', default='marko'),
-#         'PASSWORD': config('DB_PASSWORD', default='your_password'),
-#         'HOST': config('DB_HOST', default='localhost'),
-#         'PORT': config('DB_PORT', default='5432'),
-#     }
-# }
-
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'apartment',
-        'USER': 'marko',
-        'PASSWORD': 'Xlw52tfh',
-        'HOST': 'localhost',
-        'PORT': '5432'
-    }
+    'default': dj_database_url.parse(config('DATABASE_URL'))
 }
+
+# Ensure SSL is required
+DATABASES['default']['OPTIONS'] = {'sslmode': 'require'}
 
 
 # Password validation
@@ -156,7 +134,8 @@ AXES_COOLOFF_TIME = 1  # time in hours
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static'
+STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static'),)
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
