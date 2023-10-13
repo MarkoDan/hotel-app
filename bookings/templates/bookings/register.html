@@ -3,7 +3,7 @@
 {% block content %}
 
 
-    <div class="container mt-5 justify-content-center col-md-6" style="padding-top: 80px;">
+    <div class="container mt-5 justify-content-center col-md-6" style="padding-top: 80px; padding-bottom: 80px;">
         <form action="{% url 'bookings:register' %}" method="post" class="p-3 rounded bg-light">
             <h1>SignUp</h1>
             <hr>
@@ -45,7 +45,7 @@
                 <input type="password" name="{{ form.password2.name }}" id="{{ form.password2.auto_id }}" class="form-control" placeholder="Repeat the password" required> 
             </div>
 
-            <button type="submit" class="btn btn-primary">Register</button>
+            <button type="submit" class="btn btn-primary">Signup</button>
 
         </form>
         

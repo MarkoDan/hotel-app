@@ -2,7 +2,14 @@
 
 {% block content %}
 
+
 <div class="container mt-5" style="padding-top: 50px; padding-bottom: 150px;">
+    <div class="alert alert-warning alert-warning fade show" role="alert">
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+        <p>If you cancel your booking, you will receive a 70% refund of the original booking amount. Please note that the refund amount may take some time to process.</p>
+    </div>
     {% for booking in bookings %}
     <div class="card mb-4">
         <div class="card-body">
@@ -15,7 +22,12 @@
                 Status: <span class="badge {% if booking.status == 'confirmed' %}badge-success{% else %}badge-secondary{% endif %}">{{ booking.get_status_display }}</span>
             </p>
             {% if booking.status == 'confirmed' %}
-                <a href="{% url 'bookings:cancel_booking' booking.id %}" class="btn dento-btn mx-2" data-animation="fadeInDown" data-delay="500ms">Cancel Booking</a>
+                <a href="{% url 'bookings:cancel_booking' booking.id %}" class="btn btn-primary">Cancel Booking</a>
+            {% endif %}
+            {% if booking.status == 'cancelled' %}
+                <div class="alert alert-success" role="alert">
+                    This booking has been canceled.
+                </div>
             {% endif %}
         </div>
     </div>

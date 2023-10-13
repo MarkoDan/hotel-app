@@ -213,6 +213,14 @@ def send_custom_email(subject, message, to_email_list, from_email=None):
     # Send the email
     return send_mail(subject, message, from_email, to_email_list)
 
+def send_owner_email(subject, message):
+    # if not from_email:
+    #     from django.conf import settings
+    #     from_email = settings.DEFAULT_FROM_EMAIL
+
+    send_mail(subject, message, 'saricstay@gmail.com', ['dankovicmarko18@gmail.com'])
+
+
 
 def contact(request):
     if request.method == "POST":
@@ -224,8 +232,8 @@ def contact(request):
         send_mail(
             subject,
             message,
-            'dankovicmarko18@gmail.com',  # Ensure this is the corrected variable name
-            ['dankovicmarko18@gmail.com'],
+            'saricstay@gmail.com',  # Ensure this is the corrected variable name
+            ['saricstay@gmail.com'],
         )
 
         
@@ -335,6 +343,17 @@ def handle_checkout_session(session):
         number_of_kids = temp_booking['number_of_kids'],
         total_price = temp_booking['total_price']
         subject = 'Booking Confirmation'
+        owner_message = f"""
+        New Booking!!!!
+        
+        Details of the booking:
+        - Customers Name: {user.first_name} {user.last_name}
+        - Check-in Date: {check_in_date.strftime('%B, %d, %Y')}
+        - Check-out Date: {check_out_date.strftime('%B, %d, %Y')}
+        - Number of Guests: {number_of_adults} adults, and {number_of_kids} kids.
+        - Total Price: €{total_price}
+        """
+        owner_subject = "New Booking!!!"
         message = f"""
         Dear {user.first_name},
 
@@ -344,14 +363,16 @@ def handle_checkout_session(session):
         - Check-in Date: {check_in_date.strftime('%B %d, %Y')}
         - Check-out Date: {check_out_date.strftime('%B %d, %Y')}
         - Number of Guests: {number_of_adults} adults, and {number_of_kids} kids.
-        - Total Price: ${total_price}
+        - Total Price: €{total_price}
 
         Thank you for choosing us. We are looking forward to hosting you!
 
         Best regards,
-        Your Hotel Team
+
+        SaricStay Zadar
         """
         send_custom_email(subject,message,[user_email])
+        send_owner_email(owner_subject, owner_message)
 
     except Exception as e:
         logger.error(f"Error while processing the checkout session: {e}")
@@ -375,22 +396,33 @@ def cancel_booking(request, booking_id):
                     # Check if the charge has already been refunded
                     charge = stripe.Charge.retrieve(latest_charge_id)
                     if not charge.refunded:
-                        refund = stripe.Refund.create(charge=latest_charge_id)
+
+                        #Calculate the refund amount as 70% of the original
+                        original_amount = charge.amount
+                        refund_percentage = 0.7 #70%
+                        refund_amount = int(original_amount * refund_percentage)
+
+                        #Create refund with calculated amount
+                        refund = stripe.Refund.create(charge=latest_charge_id, amount=refund_amount)
                         arn = refund.get('acquirer_reference_number', 'N/A')
                     else:
                         messages.error(request, "This charge has already been refunded.")
                         return redirect('bookings:home')
 
-                except Exception as e:
-                    messages.error(request, "There was an error processing the refund.")
+                except stripe.error.StripeError as e:
+                    messages.error(request, f"Error processing the refund: {str(e)}")
                     return redirect('bookings:home')
-
+            else:
+                messages.error(request, "No stripe charge associated with this booking")
+                return redirect('bookings:home')
             # Update the booking status
             booking.status = 'cancelled'
             booking.save()
 
             # Send a confirmation email to the user
             user_email = request.user.email
+            owner_email_subject = "Booking  cancelled and refund requested!!"
+            owner_email_message = f"The customer {request.user.first_name} {request.user.last_name} has cancelled the booking, and requested refund for date {booking.check_in_date} - {booking.check_out_date}." 
             email_subject = "Booking Cancellation and Refund"
             email_message = f"""
             Dear {request.user.first_name},
@@ -400,22 +432,23 @@ def cancel_booking(request, booking_id):
             We have issued a refund for your booking. Below are the refund details:
 
             - **Payment Status:** Refunded
-            - **Acquirer Reference Number (ARN):** {arn}
             - **Expected Settlement Time:** It may take 5-10 business days for funds to settle in your account. Please note that the exact timing can vary depending on your bank.
 
-            It may take a few days for the money to reach your bank account. If you do not see the refund after 10 business days, we recommend contacting your bank with the ARN provided for more details.
+            It may take a few days for the money to reach your bank account. If you do not see the refund after 10 business days, we recommend contacting us back for more details.
 
             If you have any other questions or concerns, please don't hesitate to contact us.
             Best regards,
-            [Your Hotel Name]
+
+            SaricStay Zadar
             """
 
             send_custom_email(email_subject, email_message, [user_email])
+            send_owner_email(owner_email_subject, owner_email_message)
 
-            messages.success(request, "Booking cancelled and refund issued.")
+            messages.success(request, "Booking cancelled and, 70% refund has been issued.")
             return redirect('bookings:display_bookings')
     else:
-        messages.error(request, "Bookings can only be cancelled and refunded up to 30 days after the booking date.")
+        messages.error(request, "Bookings can only be cancelled and refunded up to 15 days after the booking date.")
         return redirect('bookings:display_bookings')
     
     return render(request, 'bookings/cancel_booking.html', {'booking': booking})

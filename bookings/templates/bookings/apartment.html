@@ -4,7 +4,10 @@
 {% load widget_tweaks %}
 
 <section class="dento-about-us-area mt-70" style="padding-top: 50px;">
+    <div id="overlay"></div>
+    <div class="loader" id="spinner" style="display: none;"></div>
 
+   <div class="loader" id="spinner" style="display: none;"></div>
   <div class="container" style="max-width: 1500px;">
     {% if messages %}
         {% for message in messages %}
@@ -178,7 +181,7 @@
           </div>
                 
 
-          <div class="loader" id="spinner" style="display: none;"></div>
+
 
         </div>
       </div>
@@ -300,6 +303,16 @@
     btn.innerHTML = 'Processing...';
 
   });
+
+    // Show the spinner and overlay
+    document.getElementById('spinner').style.display = 'block';
+    document.getElementById('overlay').style.display = 'block';
+
+    // Your other code...
+
+    // Hide the spinner and overlay
+    document.getElementById('spinner').style.display = 'none';
+    document.getElementById('overlay').style.display = 'none';
 
 
 

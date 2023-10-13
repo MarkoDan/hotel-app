@@ -29,3 +29,6 @@ urlpatterns = [
 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+handler404 = 'bookings.views.error_views.custom_404_view'
+handler500 = 'bookings.views.error_views.custom_500_view'
