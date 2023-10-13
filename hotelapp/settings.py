@@ -12,7 +12,6 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 
 import os
 from pathlib import Path
-import dj_database_url
 from django.contrib.messages import constants as messages
 from decouple import config
 from pathlib import Path
@@ -30,7 +29,7 @@ SECRET_KEY = config('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config('DEBUG', cast=bool)
 
-ALLOWED_HOSTS = ['localhost','127.0.0.1', 'saricstay.com']
+ALLOWED_HOSTS = ['mark125b.pythonanywhere.com']
 
 
 # Application definition
@@ -86,12 +85,17 @@ WSGI_APPLICATION = 'hotelapp.wsgi.application'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
 
-DATABASES = {
-    'default': dj_database_url.parse(config('DATABASE_URL'))
-}
 
-# Ensure SSL is required
-DATABASES['default']['OPTIONS'] = {'sslmode': 'require'}
+DATABASES = {
+    'default': {
+        'ENGINE': config('DB_ENGINE', default='django.db.backends.mysql'),
+        'NAME': config('DB_NAME'),
+        'USER': config('DB_USER'),
+        'PASSWORD': config('DB_PASSWORD'),
+        'HOST': config('DB_HOST',),
+        'PORT': config('DB_PORT', default='3306'),
+    }
+}
 
 
 # Password validation
@@ -134,8 +138,8 @@ AXES_COOLOFF_TIME = 1  # time in hours
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
-STATIC_URL = '/static'
-STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static'),)
+STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field

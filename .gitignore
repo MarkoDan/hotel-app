@@ -17,3 +17,7 @@ virtual-env/
 
 # Any other environment files
 *.env
+
+static/*
+!static/style.css
+!static/img/
